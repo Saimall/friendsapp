@@ -1,5 +1,6 @@
 const express = require('express');
 const Partner = require('../models/partnerAutth');
+const session = require("express-session");
 
 const app = express.Router();
 function generateOTP(length = 6) {
@@ -11,6 +12,17 @@ function generateOTP(length = 6) {
     }
     return otp;
   }
+
+app.use(
+  session({
+   secret: "my-super-secret-key-21728172615261562",
+   resave: false,
+   saveUninitialized:false, 
+   cookie: {
+      maxAge: 24 * 60 * 60 * 1000, //24hours
+    },
+  })
+)
 
 app.post('/partner/signup', async (req, res) => {
     try {
@@ -26,7 +38,6 @@ app.post('/partner/signup', async (req, res) => {
 
       // Send OTP via Twilio
       // await sendOtpViaTwilio(contact, otp);
-  
       // Create a new partner document with signup data and OTP
       console.log(otp)
       const partner = new Partner({ name, contact, email, password, city, otp });
@@ -166,7 +177,7 @@ app.post('/partner/deny', async (req, res) => {
     if (partner.status === 'Denied') {
       return res.json({ success: true, message: 'Partner already denied.' });
     }
-
+       
     // Update the partner status to 'Denied'
     partner.status = 'Denied';
     await partner.save();

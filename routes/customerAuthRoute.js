@@ -18,7 +18,7 @@ function generateOTP(length = 6) {
 
 app.post('/customer/signup', async (req, res) => {
     try {
-      const { name, contact, email, password } = req.body;
+      const { name, contact, email, password} = req.body;
 
       // Check if email or contact already exists in the database
     const existingCustomer = await Customer.findOne({ $or: [{ email }, { contact }] });
@@ -103,6 +103,7 @@ app.post('/customer/signup', async (req, res) => {
       res.status(500).json({ success: false, message: 'Error fetching customers.' });
     }
   });
+  
 
 
   module.exports = app;

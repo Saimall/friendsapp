@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Service = require('../models/service');
+const Customer = require('../models/customerAuth');
+const Partner = require('../models/partnerAutth');
+const { app } = require('firebase-admin');
 
 router.post('/services', async (req, res) => {
   try {
@@ -46,6 +49,181 @@ router.put('/services/:serviceId', async (req, res) => {
       res.status(500).json({ error: 'Unable to delete the service.' });
     }
   });
+
+
+  router.get('/Book/:serviceid/:customerid',async(request,response)=>{
+    try{
+      const serviceid = request.params.serviceid;
+      const customerid = request.params.customerid
+      const service = await Service.findOne(serviceid);
+      if(!service){
+        response.json({message:'Service is invalid'});
+      }
+      const customer = await Customer.findOne(customerid);
+      if(!customer){
+        response.json({message:'Customer is invalid'});
+      }
+      const address_length = customer.address.length;
+      if(address_length==0){
+        response.json({message:"new address is detected"})// if address length is equal to zero we need to render request-1 page
+        //using response.render() we need to render the html page //need to be done by frontend by knowing the name of request page
+        // response.render("")= using this need to render the frontend enter a details page;
+      }
+      else{
+        const list_address = customer.address;
+        response.redirect(`/Book/${serviceid}/${customerid}/details`,{
+          list_address
+        }) //sending list of avaliable address to the Details page
+      }
+    }
+    catch(error){
+      res.status(500).json({ error: 'Unable to load enter details page.' });
+    }
+  });
+
+  //adding new entry details need to give this url in frontend after clicking next
+  router.post('/Book/:serviceid/:customerid/new_entery', async(request,response)=>{
+    const fullname = request.body.fullname;
+    const phoneNumber = request.body.phoneNumber;
+    const Pincode = request.body.Pincode;
+    const House =request.body.House;
+    const City = request.body.City;
+    const State = request.body.State;
+    //retreivng id
+    const customerid = request.params.customerid;
+    const customer = await Customer.findOne(customerid);
+    //validations while acceptings values
+    if(fullname==" " || fullname.length==0){
+      response.json({message:"Full name can not be empty"})//as of now just sending response to check
+      //we can redirect to same page depends on user need to communicate with frontend
+    }
+    if(phoneNumber==" " || phoneNumber.length==0){
+      response.json({message:"Full name can not be empty"})
+     
+    }
+    if(Pincode==" " || Pincode.length==0){
+      response.json({message:"Full name can not be empty"})
+     
+    }
+    if(House==" " || House.length==0){
+      response.json({message:"Full name can not be empty"})
+      
+    }
+    if(City==" " || City.length==0){
+      response.json({message:"Full name can not be empty"})
+     
+    }
+    if(State==" " || State.length==0){
+      response.json({message:"Full name can not be empty"})
+    
+    }
+    
+    //if everything okay the updating the data 
+    try{
+    const responseadded =   await Customer.findByIdAndUpdate(
+     customerid,
+     {address: [fullname,phoneNumber,Pincode,House,City,State,]}
+    )
+
+    if(responseadded){
+      response.json(responseadded);
+      // or we can redirect to Details page i.e Request-2 page using response.redirect()
+    }
+    else
+    {
+      response.json({message:"error while adding"});
+    }
+  }catch(error){
+    response.json({message:"Error while adding!!!!"});
+  }
+   
+  })
+
+  //rednering response-2 page
+
+  router.get("/Book/:serviceid/:customerid/details",async(request,response)=>{
+      
+    //validating customer and service for every page
+    const serviceid = request.params.serviceid;
+      const customerid = request.params.customerid
+      const service = await Service.findOne(serviceid);
+      if(!service){
+        response.json({message:'Service is invalid'});
+      }
+      const customer = await Customer.findOne(customerid);
+
+      if(!customer){
+        response.json({message:'Customer is invalid'});
+      }
+      else{
+        const address_array = customer.address;
+        //need to give front end page name in double quotes example index.html or any react page
+        response.redirect("",{
+          address_array
+        })
+      }
+
+      //need to discuss timesolt functionality and added attribute in date
+    
+    const date = request.body.date;
+    const response_partner =   await Partner.findByIdAndUpdate(
+      customerid, //joined partner and cutomer with date attribute
+      {date:date}
+     )
+
+     if(response_partner){
+      return response.json(response_partner) //checking the response
+     }
+  });
+
+
+//clicking on add to cart
+
+router.post("/services/:customerid/addtocart", async(request,response)=>{
+
+  const serviceid = request.body.serviceid;
+
+  const service = await Service.findOne(serviceid);
+  const customerid = request.params.customerid;
+  if(!service){
+    response.json({message:"invalid service"});
+  }
+  else{
+   try{
+    const response_add = await Customer.findByIdAndUpdate(
+      customerid,
+      {service:serviceid}
+    )
+   }
+   catch(error){
+     return response.json({message:"error while adding cart"})
+   }
+  }
+})
+
+//clicking on cart item
+
+router.get("/services/:customerid/addtocart",async(request,response)=>{
+
+     const customerid = request.params.id;
+
+     // retriving list of service ids
+
+     const customer = await Customer.findOne(customerid);
+     
+     const serviceids_list = customer.service; // retriving all service ids
+     
+     let array_servicelist=[];
+   for(let i=0;i<serviceids_list.length;i++){
+      
+      const service_name = await Service.findOne(serviceids_list[i]);
+      
+      array_servicelist[i]=service_name;
+   }
+
+   return response.json(array_servicelist);
+})
+
 
 
 module.exports = router;

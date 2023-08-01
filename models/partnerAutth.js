@@ -13,6 +13,11 @@ const partnerSchema = new mongoose.Schema({
   pandoc: { type: String },
   otp: { type: String },
   status: { type: String, enum: ['Unverified', 'Verified', 'Denied'], default: 'Unverified' },
+  date: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    required: true,
+  },
 }, {
   timestamps: true,
 });
