@@ -6,6 +6,7 @@ const serviceSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  type: { type: String, enum: ['Daily', 'Monthly'], },
   cities: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'City',

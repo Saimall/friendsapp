@@ -35,6 +35,27 @@ router.get('/subservices', async (req, res) => {
   }
 });
 
+router.post('/subservices/by-pincode', async (req, res) => {
+  try {
+    const { pincode, serviceId } = req.body;
+
+    // Find the service by ID to validate the service existence
+    const service = await Service.findById(serviceId);
+    if (!service) {
+      return res.status(400).json({ error: 'Invalid service ID.' });
+    }
+
+    // Find the sub-services that match the provided pincode
+    const subServices = await SubService.find({
+      service: serviceId,
+      pincodes: pincode,
+    }).populate('service', 'name');
+
+    res.json(subServices);
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to fetch sub-services by pincode.' });
+  }
+});
 
   
 router.get('/services/:serviceId', async (req, res) => {
