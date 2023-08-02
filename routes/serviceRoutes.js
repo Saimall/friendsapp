@@ -3,6 +3,7 @@ const router = express.Router();
 const Service = require('../models/service');
 const Customer = require('../models/customerAuth');
 const Partner = require('../models/partnerAutth');
+const Cart = require('../models/Cart');
 const { app } = require('firebase-admin');
 
 router.post('/services', async (req, res) => {
@@ -98,12 +99,12 @@ router.put('/services/:serviceId', async (req, res) => {
   });
 
 
-  router.get('/Book/:serviceid/:customerid',async(request,response)=>{
+  router.get('/Book/:Subserviceid/:customerid',async(request,response)=>{
     try{
-      const serviceid = request.params.serviceid;
+      const subServiceid = request.params.serviceid;
       const customerid = request.params.customerid
-      const service = await Service.findOne(serviceid);
-      if(!service){
+      const subService = await subService.findOne(suberviceid);
+      if(!subService){
         response.json({message:'Service is invalid'});
       }
       const customer = await Customer.findOne(customerid);
@@ -169,7 +170,7 @@ router.put('/services/:serviceId', async (req, res) => {
     try{
     const responseadded =   await Customer.findByIdAndUpdate(
      customerid,
-     {address: [fullname,phoneNumber,Pincode,House,City,State,]}
+     {address: [...fullname,...phoneNumber,...Pincode,...House,...City,...State,]}
     )
 
     if(responseadded){
@@ -209,67 +210,65 @@ router.put('/services/:serviceId', async (req, res) => {
           address_array
         })
       }
-
-      //need to discuss timesolt functionality and added attribute in date
-    
-    const date = request.body.date;
-    const response_partner =   await Partner.findByIdAndUpdate(
-      customerid, //joined partner and cutomer with date attribute
-      {date:date}
-     )
-
-     if(response_partner){
-      return response.json(response_partner) //checking the response
-     }
   });
 
 
 //clicking on add to cart
 
+
+// ---------------------------------------------------------------------------------------------
+//cart adding
+
 router.post("/services/:customerid/addtocart", async(request,response)=>{
 
-  const serviceid = request.body.serviceid;
-
-  const service = await Service.findOne(serviceid);
+ 
   const customerid = request.params.customerid;
-  if(!service){
-    response.json({message:"invalid service"});
+  const { userId, subServiceId} = req.body;
+ const customer = Customer.findOne(customerid);
+  
+
+  const existingItem = customer.cart.find(item => item.subService.toString() === subServiceId);
+ 
+  if(existingItem){
+    response.json({message:"error occured!! Already present"});
   }
   else{
-   try{
-    const response_add = await Customer.findByIdAndUpdate(
-      customerid,
-      {service:serviceid}
-    )
-   }
-   catch(error){
-     return response.json({message:"error while adding cart"})
-   }
+  customer.cart.push({ subService: subServiceId});
+  response.json({message:"Cart Added succesfully"});
   }
 })
 
-//clicking on cart item
+router.get('/cart/:customerId', async (req, res) => {
+  try {
+    const { customerId } = req.params;
+    const customer = await Customer.findById(customerId);
+    const cart =customer.cart;
+    Customer.findById(customerId).populate('cart.subService', 'name price pincode');
+    res.json(customer.cart);
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to fetch cart.' });
+  }
+});
 
-router.get("/services/:customerid/getcart",async(request,response)=>{
+router.delete('/cart/:customerId/:subServiceId', async (req, res) => {
+  try {
+    const { customerId, subServiceId } = req.params;
+    const customer = await Customer.findById(customerId);
 
-     const customerid = request.params.id;
+    if (!customer) {
+      return res.status(404).json({ error: 'Customer not found.' });
+    }
 
-     // retriving list of service ids
+    customer.cart = customer.cart.filter(item => item.subService.toString() !== subServiceId);
+    await customer.save();
+    res.json(customer.cart);
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to remove sub-service from cart.' });
+  }
+});
 
-     const customer = await Customer.findOne(customerid);
-     
-     const serviceids_list = customer.service; // retriving all service ids
-     
-     let array_servicelist=[];
-   for(let i=0;i<serviceids_list.length;i++){
-      
-      const service_name = await Service.findOne(serviceids_list[i]);
-      
-      array_servicelist[i]=service_name;
-   }
 
-   return response.json(array_servicelist);
-})
+
 
 
 
