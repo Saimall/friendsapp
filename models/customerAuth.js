@@ -7,7 +7,7 @@ const customerSchema = new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   otp: { type: String },
-  date:{type: Date,required:false},
+  profile:{type: String,required:false},
   service: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Service',

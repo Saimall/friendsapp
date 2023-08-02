@@ -11,6 +11,10 @@ const bookingSchema = new mongoose.Schema({
     ref: 'SubService',
     required: true,
   },
+  review:{
+    type:String,
+    required:false
+  },
   address: {
     type: String,
     required: true,
