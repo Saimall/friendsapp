@@ -13,6 +13,15 @@ const customerSchema = new mongoose.Schema({
     ref: 'Service',
     required: false,
   }],
+  cart: [
+    {
+      subService: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SubService', // Reference to the SubService model
+        required: true,
+      },
+    },
+  ],
   address:[{
    fullname: {
       type: String,
