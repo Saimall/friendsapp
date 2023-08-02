@@ -45,6 +45,8 @@ router.get('/services/monthly', async (req, res) => {
     res.status(500).json({ error: 'Unable to fetch monthly services.' });
   }
 });
+
+
 router.post('/services/check-availability', async (req, res) => {
   try {
     const { cityId, serviceId } = req.body;
