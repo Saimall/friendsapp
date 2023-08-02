@@ -44,6 +44,8 @@ router.get('/services/monthly', async (req, res) => {
     res.status(500).json({ error: 'Unable to fetch monthly services.' });
   }
 });
+
+
 router.post('/services/check-availability', async (req, res) => {
   try {
     const { cityId, serviceId } = req.body;
@@ -248,7 +250,7 @@ router.post("/services/:customerid/addtocart", async(request,response)=>{
 
 //clicking on cart item
 
-router.get("/services/:customerid/addtocart",async(request,response)=>{
+router.get("/services/:customerid/getcart",async(request,response)=>{
 
      const customerid = request.params.id;
 

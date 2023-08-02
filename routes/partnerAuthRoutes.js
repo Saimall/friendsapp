@@ -228,4 +228,25 @@ app.get('/partner/denied', async (req, res) => {
   }
 });
 
+
+//get partner service city
+router.get('/partners/:partnerId/cities', async (req, res) => {
+  try {
+    const { partnerId } = req.params;
+
+    // Find the partner by ID
+    const partner = await Partner.findById(partnerId);
+    if (!partner) {
+      return res.status(404).json({ error: 'Partner not found.' });
+    }
+
+    // Get the list of cities where the partner provides services
+    const serviceCities = partner.city;
+
+    res.json(serviceCities);
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to fetch partner service cities.' });
+  }
+});
+
 module.exports = app;
