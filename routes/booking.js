@@ -3,6 +3,7 @@ const router = express.Router();
 const Booking = require('../models/booking');
 const Razorpay = require('razorpay'); // Import Razorpay library
 const Customer = require('../models/customerAuth');
+const Service = require('../models/service');
 
 // POST /bookings
 router.post('/bookings', async (req, res) => {
@@ -95,8 +96,87 @@ router.post('/bookings-cart', async (req, res) => {
   });
 
 
+  //updating customerreview
+  router.put('/service-requests/:requestId/customer-updatereview', async (req, res) => {
+    try {
+      const { requestId } = req.params;
+      const { customerId, review } = req.body;
   
+      // Find the customer by ID
+      const customer = await Customer.findById(customerId);
+      if (!customer) {
+        return res.status(404).json({ error: 'Customer not found.' });
+      }
+  
+      // Find the service request by ID
+      const bookingrequest= await Booking.findById(requestId);
+      if (!bookingrequest) {
+        return res.status(404).json({ error: 'Service request not found.' });
+      }
+  
+      // Check if the service request is associated with the customer
+      if (Booking.customer.toString() !== customerId) {
+        return res.status(403).json({ error: 'Unauthorized to update review for this service request.' });
+      }
+  
+      // Update the review
+      Booking.customerreview = review;
+      await Booking.save();
+  
+      res.status(200).json(bookingrequest);
+    } catch (err) {
+      res.status(500).json({ error: 'Unable to update review.' });
+    }
+  });
 
+//updating partner review
+  router.put('/service-requests/:requestId/partner-updatereview', async (req, res) => {
+    try {
+      const { requestId } = req.params;
+      const { customerId, review } = req.body;
+  
+      // Find the customer by ID
+      const customer = await Customer.findById(customerId);
+      if (!customer) {
+        return res.status(404).json({ error: 'Customer not found.' });
+      }
+  
+      // Find the service request by ID
+      const bookingrequest= await Booking.findById(requestId);
+      if (!bookingrequest) {
+        return res.status(404).json({ error: 'Service request not found.' });
+      }
+  
+      // Check if the service request is associated with the customer
+      if (Booking.customer.toString() !== customerId) {
+        return res.status(403).json({ error: 'Unauthorized to update review for this service request.' });
+      }
+  
+      // Update the review
+      Booking.partnerreview = review;
+      await Booking.save();
+  
+      res.status(200).json(bookingrequest);
+    } catch (err) {
+      res.status(500).json({ error: 'Unable to update review.' });
+    }
+  });
+
+
+  //get booked service by serviceId
+
+  router.get('/bookedservice/:serviceid',async(request,response)=>{
+
+    const serviceid = request.params.serviceid;
+
+    const  service = Service.findById(serviceid);
+    if(!service){
+        return response.status(404).json({message:"errror occured"});
+
+    }
+    return res.status(200).json(service);
+
+  })
 
 
 module.exports = router;

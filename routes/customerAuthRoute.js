@@ -129,14 +129,6 @@ app.post('/customer/signup', async (req, res) => {
 
 
 
-  app.get("/customer/:customerid",async(request,response)=>{
-
-        const customerid = request.params.customerid;
-        
-        
-
-
-  })
   
 
 
