@@ -22,6 +22,9 @@ const customerSchema = new mongoose.Schema({
       },
     },
   ],
+  // based on address pincode - customer click on dashbboard
+  //clicking on address based on pincode,city service display 
+  
   address:[{
    fullname: {
       type: String,
