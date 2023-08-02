@@ -4,6 +4,9 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const Admin=require('../models/adminAuth');
+const Partner=require('../models/partnerAuth');
+const City=require('../models/city');
+const Customer = require('../models/customerAuth');
 
 const app = express.Router();
 
@@ -130,6 +133,88 @@ app.get('/admins', async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   });
+
+//get partners details 
+  app.get('/admins/partnersdetails',async(request,response)=>{
+  
+    const partners = Partner.find({status:'Verified'});
+    if(!partners){
+      return response.status(401).json({message:"invalid partner"});
+    }
+    else{
+      return response.json(200).json(partners);
+    }
+
+  })
+
+
+
+  // getting each partner details
+app.get('/admins/:partnerid/partnersprofile',async(request,response)=>{
+  
+  const partnerid = request.params.partnerid;
+  if(!partner){
+    return response.status(402).json({message:"invalid partner id"});
+  }
+  else{
+         const partner = Partner.findOne(partnerid);
+         if(!partner){
+          return response.status(401).json({message:"invalid partner id"});
+         }
+         else{
+          //sending partner object which can be accssed by frontend to attributes values to display
+            return response.status(200).json(partner);
+         }
+  
+        }
+})
+
+
+//getting all cities
+
+app.get("/cities/:customerid",async(request,response)=>{
+
+ const customerid = request.params.customerid;
+ const citylist = City.find() //retriveing all cities
+const customer = Customer.findOne(customerid); 
+ if(!customer){
+  return response.status(402).json({message:"invalid customer requesting city"});
+ }
+ else{
+     
+     return response.json(citylist);
+ }
+})
+
+//geting partners work status
+app.get("/status/partners/work",async(request,response)=>{
+  
+  const partners = Partner.find()//retriving all partners
+
+  let upcoming_partners=[];
+  let completed_partners=[];
+  let ongoing_partners=[];
+
+  for(let i=0;i<partners.length;i++){
+
+      if(partners[i]. partnerworkstatus == "Ongoing"){
+           ongoing_partners.push(partners[i]);
+      }
+      else if(partners[i]. partnerworkstatus == "Upcoming"){
+        upcoming_partners.push(partners[i]);
+      }
+      else{
+        completed_partners.push(partners[i]);
+      }
+  }
+
+  return response.json({upcoming_partners,completed_partners,ongoing_partners});
+})
+
+
+//getting avaliable service requets
+
+
   
   module.exports = app;
   
