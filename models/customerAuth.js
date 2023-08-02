@@ -7,12 +7,21 @@ const customerSchema = new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   otp: { type: String },
-  date:{type: Date,required:false},
+  profile:{type: String,required:false},
   service: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Service',
     required: false,
   }],
+  cart: [
+    {
+      subService: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SubService', // Reference to the SubService model
+        required: true,
+      },
+    },
+  ],
   address:[{
    fullname: {
       type: String,
