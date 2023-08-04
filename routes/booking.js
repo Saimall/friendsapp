@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Booking = require('../models/booking');
-const Razorpay = require('razorpay'); // Import Razorpay library
+// const Razorpay = require('razorpay'); // Import Razorpay library
 const Customer = require('../models/customerAuth');
 const Service = require('../models/service');
+const Partner = require('../models/partnerAutth');
 
 // POST /bookings
 router.post('/bookings', async (req, res) => {
@@ -181,8 +182,8 @@ router.post('/bookings-cart', async (req, res) => {
   router.get('/bookingslist/:partnerid',async(request,response)=>{
 
     const partnerid = requet.params.partnerid;
-
-    if(!partnerid){
+ const partner = Partner.findOne(partnerid);
+    if(!partner){
       return response.status(400).response({message:"invalid partner"})
     }
 

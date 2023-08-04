@@ -1,6 +1,6 @@
 const express = require('express');
 const Customer = require('../models/customerAuth');
-const Booking = require('.../models/booking');
+const Booking = require('../models/booking');
 
 const app = express.Router();
 
@@ -107,7 +107,7 @@ app.post('/customer/signup', async (req, res) => {
 
   
   // Get service history for a customer by customerId
-  router.get('/customers/:customerId/service-history', async (req, res) => {
+  app.get('/customers/:customerId/service-history', async (req, res) => {
     try {
       const { customerId } = req.params;
   
