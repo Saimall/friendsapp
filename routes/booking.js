@@ -176,6 +176,17 @@ router.post('/bookings-cart', async (req, res) => {
     }
     return res.status(200).json(service);
 
+  });
+
+  router.get('/bookingslist/:partnerid',async(request,response)=>{
+
+    const partnerid = requet.params.partnerid;
+
+    if(!partnerid){
+      return response.status(400).response({message:"invalid partner"})
+    }
+
+
   })
 
 

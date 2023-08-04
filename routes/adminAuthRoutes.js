@@ -310,7 +310,7 @@ app.get("/partners/avaliable",async(request,response)=>{
   //edit profile 
 
  
-app.put("/editprofile", async (request, response) => {
+app.put("/admineditprofile", async (request, response) => {
   const { fullname, email } = request.body;
 
   // Find the admin by the unique identifier (e.g., username)
@@ -352,18 +352,12 @@ app.put("/editprofile", async (request, response) => {
   }
 });
 
+});
 
 
-
-        
-  
-  });
 
    
 
-
-
-})
 
 
   

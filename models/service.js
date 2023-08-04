@@ -12,6 +12,31 @@ const serviceSchema = new mongoose.Schema({
     ref: 'City',
     required: false,
   }],
+  price: {
+    type: Number,
+    required: true,
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+
+  status: {
+    type: String,
+    enum: ['Pending', 'Started', 'Completed'],
+    default: 'Pending',
+  },
+
+  partner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Partner',
+    required: true,
+  },
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    required: true,
+  },
   
 });
 
