@@ -12,6 +12,7 @@ const serviceSchema = new mongoose.Schema({
     ref: 'City',
     required: false,
   }],
+  
 });
 
 const Service = mongoose.model('Service', serviceSchema);
