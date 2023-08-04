@@ -40,7 +40,9 @@ app.post('/partner/signup', async (req, res) => {
       // await sendOtpViaTwilio(contact, otp);
       // Create a new partner document with signup data and OTP
       console.log(otp)
-      const partner = new Partner({ name, contact, email, password, city, otp });
+      const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+
+      const partner = new Partner({ name, contact, email, password: hashedPassword, city, otp });
       await partner.save();
   
       res.json({ success: true, message: 'OTP sent for verification.' });
@@ -230,7 +232,7 @@ app.get('/partner/denied', async (req, res) => {
 
 
 //get partner service city
-router.get('/partners/:partnerId/cities', async (req, res) => {
+router.get('/partners/:partnerId/city', async (req, res) => {
   try {
     const { partnerId } = req.params;
 
@@ -238,7 +240,7 @@ router.get('/partners/:partnerId/cities', async (req, res) => {
     const partner = await Partner.findById(partnerId);
     if (!partner) {
       return res.status(404).json({ error: 'Partner not found.' });
-    }
+    } 
 
     // Get the list of cities where the partner provides services
     const serviceCities = partner.city;
@@ -248,5 +250,66 @@ router.get('/partners/:partnerId/cities', async (req, res) => {
     res.status(500).json({ error: 'Unable to fetch partner service cities.' });
   }
 });
+
+// Endpoint to update partner's online/offline status
+router.put('/partner/:partnerId/status', async (req, res) => {
+  try {
+    const { partnerId } = req.params;
+    const { status } = req.body; // 'online' or 'offline'
+
+    // Find the partner by ID
+    const partner = await Partner.findById(partnerId);
+    if (!partner) {
+      return res.status(404).json({ success: false, message: 'Partner not found.' });
+    }
+
+    // Update the partner's status
+    partner.onlineStatus = status;
+
+    // Save the updated partner
+    await partner.save();
+
+    res.json({ success: true, message: `Partner is now ${status}.` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Error updating partner status.' });
+  }
+});
+
+
+// Endpoint to get partners with 'Ongoing' work status
+router.get('/partners/ongoing', async (req, res) => {
+  try {
+    const ongoingPartners = await Partner.find({ partnerworkstatus: 'Ongoing' });
+    res.json({ success: true, partners: ongoingPartners });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Error fetching partners with ongoing work status.' });
+  }
+});
+
+// Endpoint to get partners with 'Upcoming' work status
+router.get('/partners/upcoming', async (req, res) => {
+  try {
+    const upcomingPartners = await Partner.find({ partnerworkstatus: 'Upcoming' });
+    res.json({ success: true, partners: upcomingPartners });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Error fetching partners with upcoming work status.' });
+  }
+});
+
+// Endpoint to get partners with 'Completed' work status
+router.get('/partners/completed', async (req, res) => {
+  try {
+    const completedPartners = await Partner.find({ partnerworkstatus: 'Completed' });
+    res.json({ success: true, partners: completedPartners });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Error fetching partners with completed work status.' });
+  }
+});
+
+
 
 module.exports = app;

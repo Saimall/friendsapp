@@ -267,7 +267,95 @@ router.delete('/cart/:customerId/:subServiceId', async (req, res) => {
   }
 });
 
+// Get available services based on selected city
+router.get('/services/:cityId', async (req, res) => {
+  try {
+    const { cityId } = req.params;
 
+    // Find the city by its ID
+    const city = await City.findById(cityId);
+    if (!city) {
+      return res.status(404).json({ error: 'City not found.' });
+    }
+
+    // Get the available services for the selected city
+    const availableServices = await Service.find({ cities: cityId });
+
+    res.json(availableServices);
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to fetch available services for the selected city.' });
+  }
+});
+
+//Get available Daily service's on selected City 
+
+router.get('/services/:pincode/daily', async (req, res) => {
+  try {
+    const { pincode } = req.params;
+
+    // Retrieve the city based on the pincode
+    const city = await City.findOne({ pincodes: pincode });
+    if (!city) {
+      return res.status(404).json({ error: 'City not found for the given pincode.' });
+    }
+
+    // Fetch all service categories that are associated with the city
+    const services = await Service.find({ cities: city._id, type: 'Daily' });
+
+    res.json(services);
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to fetch services.' });
+  }
+});
+
+//Get available Daily service's on selected City 
+
+router.get('/services/:pincode/Monthly', async (req, res) => {
+  try {
+    const { pincode } = req.params;
+
+    // Retrieve the city based on the pincode
+    const city = await City.findOne({ pincodes: pincode });
+    if (!city) {
+      return res.status(404).json({ error: 'City not found for the given pincode.' });
+    }
+
+    // Fetch all service categories that are associated with the city
+    const services = await Service.find({ cities: city._id, type: 'Monthly' });
+
+    res.json(services);
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to fetch services.' });
+  }
+});
+
+
+//Get Subservice's based on pincode and serviceId 
+
+router.get('/services/:serviceId/:pincode/subservices', async (req, res) => {
+  try {
+    const { serviceId, pincode } = req.params;
+
+    // Retrieve the city based on the pincode
+    const city = await City.findOne({ pincodes: pincode });
+    if (!city) {
+      return res.status(404).json({ error: 'City not found for the given pincode.' });
+    }
+
+    // Fetch the requested service category (serviceId) and ensure it is associated with the city
+    const service = await Service.findOne({ _id: serviceId, cities: city._id });
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found.' });
+    }
+
+    // Retrieve all the subservices of the requested service category that are available in the city
+    const subservices = await SubService.find({ service: service._id, pincodes: pincode });
+
+    res.json(subservices);
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to fetch subservices.' });
+  }
+});
 
 
 

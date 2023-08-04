@@ -9,7 +9,7 @@ const partnerSchema = new mongoose.Schema({
   city: { type: String, required: true },
   aadharNum: { type: String },
   documentsubmitted:{
-    type:String,
+    type:Boolean,
     required:false,
   },
   panNum: { type: String },
