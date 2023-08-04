@@ -8,6 +8,10 @@ const customerSchema = new mongoose.Schema({
   password: { type: String, required: true },
   otp: { type: String },
   profile:{type: String,required:false},
+  review:{
+    type:String,
+    required:false,
+  },
   service: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Service',

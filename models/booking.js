@@ -13,7 +13,26 @@ const bookingSchema = new mongoose.Schema({
   },
   partnerreview:{
     type:String,
-    required:false
+    required: false,
+    default:5,
+    min: 1,
+    max: 5,
+  },
+  partnerrating:{
+    type: Number,
+    required: false,
+    default:5,
+    min: 1,
+    max: 5,
+
+  },
+  customerrating:{
+    type: Number,
+    required: false,
+    default:5,
+    min: 1,
+    max: 5,
+
   },
   customerreview:{
       type:String,
