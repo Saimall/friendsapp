@@ -7,6 +7,9 @@ const Admin=require('../models/adminAuth');
 const Partner=require('../models/partnerAuth');
 const City=require('../models/city');
 const Customer = require('../models/customerAuth');
+const Booking = require('../models/booking');
+const Review = require('../models/review');
+const Service = require('../models/service');
 
 const app = express.Router();
 
@@ -187,32 +190,180 @@ const customer = Customer.findOne(customerid);
 })
 
 //geting partners work status
-app.get("/status/partners/work",async(request,response)=>{
+app.get("/ongoingstatus/partners",async(request,response)=>{
   
-  const partners = Partner.find()//retriving all partners
+  const ongoingpartners = Partner.find({partnerworkstatus:"Ongoing"});
 
-  let upcoming_partners=[];
-  let completed_partners=[];
-  let ongoing_partners=[];
+  
 
-  for(let i=0;i<partners.length;i++){
+  return response.json(ongoingpartners);
+});
 
-      if(partners[i]. partnerworkstatus == "Ongoing"){
-           ongoing_partners.push(partners[i]);
-      }
-      else if(partners[i]. partnerworkstatus == "Upcoming"){
-        upcoming_partners.push(partners[i]);
-      }
-      else{
-        completed_partners.push(partners[i]);
-      }
-  }
+app.get("/Completedstatus/partners",async(request,response)=>{
+  
+  const Completedpartners = Partner.find({partnerworkstatus:"Completed"});
 
-  return response.json({upcoming_partners,completed_partners,ongoing_partners});
+  
+
+  return response.json(Completedpartners);
+});
+
+app.get("/Upcomingstatus/partners",async(request,response)=>{
+  
+  const Upcomingpartners = Partner.find({partnerworkstatus:"Upcoming"});
+
+  
+
+  return response.json(Upcomingpartners);
+});
+
+//customer review
+
+app.get("/customerreview",async(request,response)=>{
+
+   const list_review =  Review.find();
+   let service_name=[];
+   let customer_object=[];
+   let review=[];
+     for(let i=0;i<list_review.length;i++){
+        review[i] = list_review[i].review;
+           let serviceid = list_review[i].service;
+           const service = Service.findOne(serviceid);
+          service_name[i]=service.name;
+          let customerid = list_review[i].customer;
+           const customer = Service.findOne(customerid);
+          customer_object[i]=customer;  
+     }
+     return response.json({review,service_name,customer_object});
+})
+
+//getting avaliable booking requets
+
+app.get("/bookingrequests",async(request,response)=>{
+ 
+  const Bookinglist = Booking.find() //getting list of Booking
+
+  let assigned_booking=[];
+  let requested_booking=[];
+  let completed_booking=[];
+  for(let i=0;i<Bookinglist.length;i++){
+
+    if(Bookinglist[i]. bookingStatus == "assigned"){
+      assigned_booking.push(Bookinglist[i]);
+    }
+    else if(Bookinglist[i]. bookingStatus == "completed"){
+      completed_booking.push(Bookinglist[i]);
+    }
+    else{
+      requested_booking.push(Bookinglist[i]);
+    }
+}
+
+return response.json({assigned_booking,requested_booking,completed_booking});
+
 })
 
 
-//getting avaliable service requets
+//getting avaliables partners 
+
+app.get("/partners/avaliable",async(request,response)=>{
+
+    const partners = Partner.find();
+    let avaliable_partners=[];
+
+    for(let i=0;i<partners.length;i++){
+
+      if(partners[i].partnerworkstatus == "Completed"){
+        avaliable_partners.push(partners[i]);
+      }
+   return response.status(200).json({avaliable_partners});
+    }
+
+//assigning service to the partners
+  app.post("/assignservice/partners/:serviceid/:partnerid",async(request,response)=>{
+        const {serviceid,partnerid}= request.params
+
+        const partner = Partner.findOne(partnerid);
+        if(!partner){
+          return response.status(401).json({message:"invalid partner"});
+        }
+        else{
+          partner.serviceassigned.push(...serviceid);
+          return response.status(200).json({message:'successfully assigned'});
+        }
+  })
+
+  //get customers
+
+  app.get("/cutomersavaliable",async(request,response)=>{
+
+     const customer = Customer.find(); //getting list of customers
+
+     if(customer.length ==0){
+      return response.status(402).json({message:"empty customers"});
+     }
+     else{
+      return response.status(200).json(customer);
+     }
+  });
+
+  //edit profile 
+
+ 
+app.put("/editprofile", async (request, response) => {
+  const { fullname, email } = request.body;
+
+  // Find the admin by the unique identifier (e.g., username)
+  const admin = await Admin.findOne({ username: email }); // Replace "admin_username" with the actual username
+
+  if (!admin) {
+    return response.status(404).json({ message: "Admin not found" });
+  }
+
+  // Check if the entered name and email are the same as the current admin's name and email
+  if (fullname === admin.fullname && email === admin.email) {
+    return response.status(420).json({ message: "Entered name and email are the same" });
+  }
+
+  if (!fullname || fullname.trim() === "") {
+    return response.status(420).json({ message: "Fullname cannot be null or empty" });
+  }
+
+  if (!email || email.trim() === "") {
+    return response.status(420).json({ message: "Email cannot be null or empty" });
+  }
+
+  // Perform the update operation using findOneAndUpdate
+  try {
+    const updatedAdmin = await Admin.findOneAndUpdate(
+      { email:email }, // The unique identifier to find the admin
+      { $set: { fullname: fullname, email: email } }, // The new data you want to update
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedAdmin) {
+      return response.status(404).json({ message: "Admin not found" });
+    }
+
+    response.status(200).json(updatedAdmin);
+  } catch (error) {
+    console.error('Error updating admin profile:', error);
+    response.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
+
+        
+  
+  });
+
+   
+
+
+
+})
 
 
   

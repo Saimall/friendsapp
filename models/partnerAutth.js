@@ -33,6 +33,12 @@ const partnerSchema = new mongoose.Schema({
     ref: 'Customer',
     required: true,
   },
+  serviceassigned:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Service',
+    required: false,
+  }],
+
 }, {
   timestamps: true,
 });
