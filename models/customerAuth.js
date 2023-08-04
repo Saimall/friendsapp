@@ -34,61 +34,32 @@ const customerSchema = new mongoose.Schema({
       type: String,
       required:false,
       //added validations to prevent adding null values
-      validate: {
-        notNull: false,
-        notEmpty: false,
-      },
     },
     Phonenumber:{
         type:String,
         required:false,
-        validate: {
-          notNull: false,
-          notEmpty: false,
-        },
     },
     Pincode:{
       type:String,
       required:false,
-      validate: {
-        notNull: false,
-        notEmpty: false,
-      },
     },
     House:{
       type:String,
       required:false,
-      validate: {
-        notNull: false,
-        notEmpty: false,
-      },
     },
     City:{
       type:String,
       required:false,
-      validate: {
-        notNull: false,
-        notEmpty: false,
-      },
     },
     State:{
       type:String,
       type:String,
       required:false,
-      validate: {
-        notNull: false,
-        notEmpty: false,
-      },
     },
     Addresstype:{
       type:String,
       required:false,
       default:"Home",
-      validate: {
-        notNull: false,
-        notEmpty: false,
-      },
-
     }
   }
   ] 

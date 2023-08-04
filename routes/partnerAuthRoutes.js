@@ -2,11 +2,10 @@ const express = require('express');
 const Partner = require('../models/partnerAutth');
 const session = require("express-session");
 const Booking = require('../models/booking');
-const Partner = require('../models/partnerAutth');
 const Service = require('../models/service');
-const subService = require('../models/subSservice');
+const subService = require('../models/subService');
 
-const partnerService = require('../models/partnerSservice');
+const partnerService = require('../models/partnerServices');
 
 const app = express.Router();
 function generateOTP(length = 6) {
@@ -238,7 +237,7 @@ app.get('/partner/denied', async (req, res) => {
 
 
 //get partner service city
-router.get('/partners/:partnerId/city', async (req, res) => {
+app.get('/partners/:partnerId/city', async (req, res) => {
   try {
     const { partnerId } = req.params;
 
@@ -258,7 +257,7 @@ router.get('/partners/:partnerId/city', async (req, res) => {
 });
 
 // Endpoint to update partner's online/offline status
-router.put('/partner/:partnerId/status', async (req, res) => {
+app.put('/partner/:partnerId/status', async (req, res) => {
   try {
     const { partnerId } = req.params;
     const { status } = req.body; // 'online' or 'offline'
@@ -284,7 +283,7 @@ router.put('/partner/:partnerId/status', async (req, res) => {
 
 
 // Endpoint to get partners with 'Ongoing' work status
-router.get('/partners/ongoing', async (req, res) => {
+app.get('/partners/ongoing', async (req, res) => {
   try {
     const ongoingPartners = await Partner.find({ partnerworkstatus: 'Ongoing' });
     res.json({ success: true, partners: ongoingPartners });
@@ -295,7 +294,7 @@ router.get('/partners/ongoing', async (req, res) => {
 });
 
 // Endpoint to get partners with 'Upcoming' work status
-router.get('/partners/upcoming', async (req, res) => {
+app.get('/partners/upcoming', async (req, res) => {
   try {
     const upcomingPartners = await Partner.find({ partnerworkstatus: 'Upcoming' });
     res.json({ success: true, partners: upcomingPartners });
@@ -306,7 +305,7 @@ router.get('/partners/upcoming', async (req, res) => {
 });
 
 // Endpoint to get partners with 'Completed' work status
-router.get('/partners/completed', async (req, res) => {
+app.get('/partners/completed', async (req, res) => {
   try {
     const completedPartners = await Partner.find({ partnerworkstatus: 'Completed' });
     res.json({ success: true, partners: completedPartners });
@@ -646,8 +645,7 @@ app.post("/updating service",async(request,response)=>{
 
   const {subservice,city,servingpincodes} = request.body;
 
-
-
+  
 })
 
 

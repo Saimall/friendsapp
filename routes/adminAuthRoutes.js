@@ -4,7 +4,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const Admin=require('../models/adminAuth');
-const Partner=require('../models/partnerAuth');
+const Partner=require('../models/partnerAutth');
 const City=require('../models/city');
 const Customer = require('../models/customerAuth');
 const Booking = require('../models/booking');
@@ -109,19 +109,19 @@ app.post('/signin', async (req, res) => {
       const { adminId, password } = req.body;
   
       // Find the admin by adminId
-      const admin = await Admin.findOne({ adminId });
+      const admin = await Admin.findOne({adminId});
       if (!admin) {
-        return res.status(401).json({ message: 'Invalid admin ID or password' });
+        return res.status(401).json({ message: 'Invalid admin ID' });
       }
   
       // Compare the provided password with the stored hashed password
       const isPasswordValid = await bcrypt.compare(password, admin.password);
       if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Invalid admin ID or password' });
+        return res.status(401).json({ message: 'Invalid  password' });
       }
   
       // If the adminId and password are valid, consider it a successful sign-in
-      res.status(200).json({ message: 'Sign-in successful' });
+      res.status(200).json(admin);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Internal server error' });
@@ -136,7 +136,7 @@ app.get('/admins', async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   });
-
+//done verification of routes till this
 //get partners details 
   app.get('/admins/partnersdetails',async(request,response)=>{
   

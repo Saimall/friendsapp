@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 
-const partnerserviceSchema = new mongoose.Schema({
+const partnerservicesSchema = new mongoose.Schema({
     partnerid: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Partner', // Reference to the SubService model
@@ -19,19 +19,19 @@ const partnerserviceSchema = new mongoose.Schema({
     }],
     city:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'city', // Reference to the SubService model
+        ref: 'City', // Reference to the SubService model
         required: true,
     },
     pincodes:[{
         city:{
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'city', // Reference to the SubService model
+            ref: 'City', // Reference to the SubService model
             required: true,
         },
     }],
   
 });
 
-const City = mongoose.model('City', citySchema);
+const partnerserviceSchema = mongoose.model('partnerserviceSchema', partnerservicesSchema);
 
-module.exports = City;
+module.exports = partnerserviceSchema;

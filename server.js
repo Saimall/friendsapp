@@ -7,7 +7,9 @@ const customerAuthRoutes=require('./routes/customerAuthRoute');
 const partnerAuthRoutes=require('./routes/partnerAuthRoutes');
 const serviceRoutes=require('./routes/serviceRoutes');
 const subServiceRoutes=require('./routes/subServiceRoutes');
-const cityRoutes=require('./routes/cityRoute');
+const bookingRoutes=require('./routes/booking');
+
+
 
 
 
@@ -18,10 +20,11 @@ app.use(bodyParser.json());
 
 app.use(customerAuthRoutes);
 app.use(partnerAuthRoutes);
-app.use('/adminAuth',adminAuthRoutes);
+app.use('/admin',adminAuthRoutes);
 app.use(serviceRoutes);
 app.use(subServiceRoutes);
-app.use(cityRoutes);
+// app.use(cityRoutes);
+app.use(bookingRoutes);
 
 // Set up MongoDB connection
 mongoose
