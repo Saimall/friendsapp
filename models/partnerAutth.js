@@ -31,7 +31,7 @@ const partnerSchema = new mongoose.Schema({
   date: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer',
-    required: true,
+    required: false,
   },
   serviceassigned:[{
     type: mongoose.Schema.Types.ObjectId,

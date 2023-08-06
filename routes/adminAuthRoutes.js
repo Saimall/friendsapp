@@ -138,39 +138,48 @@ app.get('/admins', async (req, res) => {
   });
 //done verification of routes till this
 //get partners details 
+//successed
   app.get('/admins/partnersdetails',async(request,response)=>{
   
-    const partners = Partner.find({status:'Verified'});
+    const partners = await Partner.find({status:'Verified'});
+    console.log(partners);
     if(!partners){
       return response.status(401).json({message:"invalid partner"});
     }
     else{
-      return response.json(200).json(partners);
+      return response.status(200).json(partners);
     }
+
 
   })
 
 
 
   // getting each partner details
+  //sucess
 app.get('/admins/:partnerid/partnersprofile',async(request,response)=>{
   
   const partnerid = request.params.partnerid;
-  if(!partner){
-    return response.status(402).json({message:"invalid partner id"});
+//calling asysnc function
+(async () => {
+  try {
+    const partner = await Partner.findById(partnerid);
+    if (partner) {
+      // 'partner' will be the document that matches the provided ID
+      return response.status(200).json(partner);
+    } else {
+      // If partner is null, the document with the provided ID was not found
+      console.log('Partner not found.');
+    }
+  } catch (err) {
+    // Handle the error (e.g., database error)
+    console.error(err);
   }
-  else{
-         const partner = Partner.findOne(partnerid);
-         if(!partner){
-          return response.status(401).json({message:"invalid partner id"});
-         }
-         else{
-          //sending partner object which can be accssed by frontend to attributes values to display
-            return response.status(200).json(partner);
-         }
-  
-        }
-})
+})();
+
+});
+
+
 
 
 //getting all cities
@@ -190,38 +199,72 @@ const customer = Customer.findOne(customerid);
 })
 
 //geting partners work status
+//successed
 app.get("/ongoingstatus/partners",async(request,response)=>{
   
-  const ongoingpartners = Partner.find({partnerworkstatus:"Ongoing"});
+  (async () => {
+    try {
+      const Ongoingpartners = await Partner.find({partnerworkstatus:"Ongoing"});
 
-  
-
-  return response.json(ongoingpartners);
+      if (Ongoingpartners) {
+        // 'partner' will be the document that matches the provided ID
+        return response.status(200).json(Ongoingpartners);
+      } else {
+        // If partner is null, the document with the provided ID was not found
+        return response.status(420).json({message:"partner not found"});
+      }
+    } catch (err) {
+      // Handle the error (e.g., database error)
+      console.error(err);
+    }
+  })();
 });
-
+//successed
 app.get("/Completedstatus/partners",async(request,response)=>{
   
-  const Completedpartners = Partner.find({partnerworkstatus:"Completed"});
+  (async () => {
+    try {
+      const Completedgpartners = await Partner.find({partnerworkstatus:"Completed"});
 
-  
-
-  return response.json(Completedpartners);
+      if (Completedpartners) {
+        // 'partner' will be the document that matches the provided ID
+        return response.status(200).json(Completedpartners);
+      } else {
+        // If partner is null, the document with the provided ID was not found
+        return response.status(420).json({message:"partner not found"});
+      }
+    } catch (err) {
+      // Handle the error (e.g., database error)
+      console.error(err);
+    }
+  })();
 });
-
+//succssed
 app.get("/Upcomingstatus/partners",async(request,response)=>{
-  
-  const Upcomingpartners = Partner.find({partnerworkstatus:"Upcoming"});
+  (async () => {
+    try {
+      const Upcomingpartners = await Partner.find({partnerworkstatus:"Upcoming"});
 
+      if (Upcomingpartners) {
+        // 'partner' will be the document that matches the provided ID
+        return response.status(200).json(Upcomingpartners);
+      } else {
+        // If partner is null, the document with the provided ID was not found
+        return response.status(420).json({message:"partner not found"});
+      }
+    } catch (err) {
+      // Handle the error (e.g., database error)
+      console.error(err);
+    }
+  })();
   
-
-  return response.json(Upcomingpartners);
 });
 
 //customer review
 
 app.get("/customerreview",async(request,response)=>{
 
-   const list_review =  Review.find();
+   const list_review = await Review.find();
    let service_name=[];
    let customer_object=[];
    let review=[];
