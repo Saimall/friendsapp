@@ -127,7 +127,7 @@ app.post('/customer/signup', async (req, res) => {
   });
   
 
-  //drop down for city selection
+
   
 
   

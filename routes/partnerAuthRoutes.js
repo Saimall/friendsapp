@@ -7,6 +7,8 @@ const subService = require('../models/subService');
 const bcrypt = require('bcrypt');
 
 const partnerService = require('../models/partnerServices');
+const moment = require('moment');
+const otpMap = new Map();
 
 const app = express.Router();
 function generateOTP(length = 6) {
@@ -39,8 +41,8 @@ app.post('/partner/signup', async (req, res) => {
     if (existingPartner) {
       return res.status(409).json({ success: false, message: 'Email or contact already exists.' });
     }
-
       const otp = generateOTP(); // Generate a 6-digit OTP
+      otpMap.set(contact, { otp, expiresAt: moment().add(5, 'minutes') });
 
     
       console.log(otp)
@@ -111,27 +113,54 @@ app.post('/partner/signup', async (req, res) => {
 //successed
 app.post('/partner/verify/otp', async (req, res) => {
   try {
-    const { email, enteredOTP } = req.body;
-    console.log(enteredOTP)
-    // Find the partner based on the ID
-    const partner = await Partner.findOne({email});
-   console.log(partner.otp);
-    // Check if the partner is not found in the database
-    if (!partner) {
-      return res.status(404).json({ success: false, message: 'Partner not found.' });
+    const contact = req.body.contact;
+    const enteredOTP = req.body.otp;
+    console.log(contact,enteredOTP)
+    const storedOTPInfo = otpMap.get(contact);
+
+    console.log('Stored OTP Info:', storedOTPInfo);
+    if (!storedOTPInfo) {
+        res.status(404).json({ message: 'OTP not found. Please generate a new OTP.' });
+        return;
     }
 
-    // Check if the entered OTP matches the one in the document
-    if (partner.otp !== enteredOTP) {
-      return res.status(400).json({ success: false, message: 'Invalid OTP.' });
+    if (moment().isAfter(storedOTPInfo.expiresAt)) {
+        otpMap.delete(phoneNumber);
+        res.status(400).json({ message: 'OTP expired. Please generate a new OTP.' });
+        return;
     }
 
-    // OTP is valid, send success response
-    res.json({ success: true, message: 'OTP verification successful.' });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: 'Error verifying OTP.' });
+    if (String(enteredOTP) === String(storedOTPInfo.otp)) {
+        otpMap.delete(contact);
+        res.json({ message: 'OTP verification successful.' });
+    } else {
+        res.status(401).json({ message: 'Invalid OTP.' });
+    }
   }
+  catch(error){
+    res.json({message: "error occured in veriofying otp"})
+  }
+  //   const { email, enteredOTP,conatct } = req.body;
+  //   console.log(enteredOTP)
+  //   // Find the partner based on the ID
+  //   const partner = await Partner.findOne({email});
+  //  console.log(partner.otp);
+  //   // Check if the partner is not found in the database
+  //   if (!partner) {
+  //     return res.status(404).json({ success: false, message: 'Partner not found.' });
+  //   }
+
+  //   // Check if the entered OTP matches the one in the document
+  //   if (partner.otp !== enteredOTP) {
+  //     return res.status(400).json({ success: false, message: 'Invalid OTP.' });
+  //   }
+
+  //   // OTP is valid, send success response
+  //   res.json({ success: true, message: 'OTP verification successful.' });
+  // } catch (err) {
+  //   console.log(err);
+  //   res.status(500).json({ success: false, message: 'Error verifying OTP.' });
+  // }
 });
 
 // Endpoint for document submission
