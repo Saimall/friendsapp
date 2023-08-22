@@ -75,7 +75,7 @@ app.post('/customer/signup', async (req, res) => {
   app.post('/customer/verify/otp', async (req, res) => {
     try {
       const { email, enteredOTP } = req.body;
-      console.log(enteredOTP)
+      
     const storedOTPInfo = otpMap.get(email);
 
     console.log('Stored OTP Info:', storedOTPInfo);
