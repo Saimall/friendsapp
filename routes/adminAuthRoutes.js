@@ -3,6 +3,10 @@
 // adminAuth.js (routes/adminAuth.js)
 const express = require('express');
 const bcrypt = require('bcrypt');
+
+
+
+
 const Admin=require('../models/adminAuth');
 const Partner=require('../models/partnerAutth');
 const City=require('../models/city');
@@ -11,9 +15,49 @@ const Booking = require('../models/booking');
 const Review = require('../models/review');
 const Service = require('../models/service');
 
+
 const app = express.Router();
 
-app.post('/signup', async (req, res) => {
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: Admin
+ *   description: Admin authentication and management
+ * components:
+ *   requestBodies:
+ *     AdminSignup:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               adminId:
+ *                 type: string
+ *                 example: admin123
+ *               password:
+ *                 type: string
+ *                 example: password123
+ * 
+ * /admin/signup:
+ *   post:
+ *     summary: Sign up a new admin
+ *     tags: [Admin]
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/AdminSignup'
+ *     responses:
+ *       201:
+ *         description: Admin registered successfully
+ *       400:
+ *         description: Admin ID already exists
+ *       500:
+ *         description: Internal server error
+ */
+
+
+app.post('/admin/signup', async (req, res) => {
   try {
     const { adminId, password } = req.body;
 
@@ -42,16 +86,80 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * tags:
+ *   name: Admin
+ *   description: Admin authentication and management
+ * 
+ * /admin/admins:
+ *   get:
+ *     summary: Admin Details
+ *     tags: [Admin]
+ *     responses:
+ *       201:
+ *         description: Admin details fetched successfully
+ *       400:
+ *         description: Admin ID Invalid
+ *       500:
+ *         description: Internal server error
+ */
+app.get('/admin/admins', async (req, res) => {
+  try {
+    const admins = await Admin.find();
+    res.status(200).json(admins);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // adminAuth.js (routes/adminAuth.js)
 // ... (previous code)
 
-app.put('/update-password/:adminId', async (req, res) => {
+
+/**
+ * @swagger
+ * /admin/update-password/{adminId}:
+ *   put:
+ *     summary: Update admin's password
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: path
+ *         name: adminId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the admin to update the password for
+ *       - in: body
+ *         name: passwordUpdate
+ *         required: true
+ *         description: Old and new passwords for updating
+ *         schema:
+ *           type: object
+ *           properties:
+ *             oldPassword:
+ *               type: string
+ *             newPassword:
+ *               type: string
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       401:
+ *         description: Invalid old password
+ *       404:
+ *         description: Admin not found
+ *       500:
+ *         description: Internal server error
+ */
+
+app.put('/admin/update-password/:adminId', async (req, res) => {
     try {
       const { adminId } = req.params;
       const { oldPassword, newPassword } = req.body;
   
       // Find the admin by adminId
-      const admin = await Admin.findOne({ adminId });
+      const admin = await Admin.findOne({ adminId: adminId });
       if (!admin) {
         return res.status(404).json({ message: 'Admin not found' });
       }
@@ -80,7 +188,7 @@ app.put('/update-password/:adminId', async (req, res) => {
   // adminAuth.js (routes/adminAuth.js)
 // ... (previous code)
 
-app.delete('/delete-account/:adminId', async (req, res) => {
+app.delete('/admin/delete-account/:adminId', async (req, res) => {
     try {
       const { adminId } = req.params;
   
@@ -104,7 +212,7 @@ app.delete('/delete-account/:adminId', async (req, res) => {
   // adminAuth.js (routes/adminAuth.js)
 // ... (previous code)
 
-app.post('/signin', async (req, res) => {
+app.post('/admin/signin', async (req, res) => {
     try {
       const { adminId, password } = req.body;
   
@@ -127,19 +235,11 @@ app.post('/signin', async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   });
-app.get('/admins', async (req, res) => {
-    try {
-      const admins = await Admin.find();
-      res.status(200).json(admins);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
+
 //done verification of routes till this
 //get partners details 
 //successed
-  app.get('/admins/partnersdetails',async(request,response)=>{
+  app.get('/admin/admins/partnersdetails',async(request,response)=>{
   
     const partners = await Partner.find({status:'Verified'});
     console.log(partners);

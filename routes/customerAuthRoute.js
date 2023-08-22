@@ -58,6 +58,7 @@ app.post('/customer/signup', async (req, res) => {
         return res.status(401).json({ success: false, message: 'Invalid password.' });
       }
       const otp = generateOTP(); // Generate a 6-digit OTP
+      otpMap.set(email, { otp, expiresAt: moment().add(5, 'minutes') });
       customer.otp = otp;
       await customer.save();
   
@@ -73,23 +74,29 @@ app.post('/customer/signup', async (req, res) => {
 
   app.post('/customer/verify/otp', async (req, res) => {
     try {
-      const { id, enteredOTP } = req.body;
-      console.log(enteredOTP)
-      // Find the partner based on the ID
-      const customer = await Customer.findById(id);
-  
-      // Check if the partner is not found in the database
-      if (!customer) {
-        return res.status(404).json({ success: false, message: 'Customer not found.' });
-      }
-  
-      // Check if the entered OTP matches the one in the document
-      if (customer.otp !== enteredOTP) {
-        return res.status(400).json({ success: false, message: 'Invalid OTP.' });
-      }
-  
+      const { email, enteredOTP } = req.body;
+      
+    const storedOTPInfo = otpMap.get(email);
+
+    console.log('Stored OTP Info:', storedOTPInfo);
+    if (!storedOTPInfo) {
+        res.status(404).json({ message: 'OTP not found. Please generate a new OTP.' });
+        return;
+    }
+
+    if (moment().isAfter(storedOTPInfo.expiresAt)) {
+        otpMap.delete(email);
+        res.status(400).json({ message: 'OTP expired. Please generate a new OTP.' });
+        return;
+    }
+
+    if (String(enteredOTP) === String(storedOTPInfo.otp)) {
+        otpMap.delete(contact);
+        res.status(200).json({ message: 'OTP verification successful.' });
+    } else {
+        res.status(401).json({ message: 'Invalid OTP.' });
+    }
       // OTP is valid, send success response
-      res.json({ success: true, message: 'OTP verification successful.' });
     } catch (err) {
       console.log(err);
       res.status(500).json({ success: false, message: 'Error verifying OTP.' });
@@ -127,7 +134,7 @@ app.post('/customer/signup', async (req, res) => {
   });
   
 
-  //drop down for city selection
+
   
 
   
