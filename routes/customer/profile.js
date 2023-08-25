@@ -1,9 +1,9 @@
 const express = require('express');
-const router = express.Router();
+const app = express.Router();
 const Customer = require('../models/customer');
 
 // Update customer profile
-router.put('/customers/:customerId', async (req, res) => {
+app.put('/customers/:customerId', async (req, res) => {
   try {
     const { customerId } = req.params;
     const { name, email } = req.body;
@@ -26,7 +26,7 @@ router.put('/customers/:customerId', async (req, res) => {
   }
 });
 
-router.get('/customers/:customerId/editpassword',async(req,res)=>{
+app.get('/customers/:customerId/editpassword',async(req,res)=>{
 
     const customerid = request.params.customerId;
 
@@ -38,7 +38,7 @@ router.get('/customers/:customerId/editpassword',async(req,res)=>{
 })
 
 
-router.put('/customers/:customerId/editpassword', async (req, res) => {
+app.put('/customers/:customerId/editpassword', async (req, res) => {
     try {
       const { customerId } = req.params;
       const {oldpasswordcustomer,newpassword } = req.body;
@@ -70,4 +70,4 @@ router.put('/customers/:customerId/editpassword', async (req, res) => {
   });
 
 
-module.exports = router;
+module.exports = app;

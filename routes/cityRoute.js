@@ -1,10 +1,10 @@
 const express = require('express');
-const router = express.Router();
+const app = express.Router();
 const City = require('../models/city');
 
 
 
-router.post('/cities', async (req, res) => {
+app.post('/cities', async (req, res) => {
   try {
     const { name, pincodes } = req.body;
     const city = new City({ name, pincodes });
@@ -15,7 +15,7 @@ router.post('/cities', async (req, res) => {
   }
 });
 
-router.get('/cities', async (req, res) => {
+app.get('/cities', async (req, res) => {
     try {
       const cities = await City.find();
       res.json(cities);
@@ -24,7 +24,7 @@ router.get('/cities', async (req, res) => {
     }
   });
 
-  router.put('/cities/:cityId', async (req, res) => {
+  app.put('/cities/:cityId', async (req, res) => {
     try {
       const { cityId } = req.params;
       const { name, pincodes } = req.body;
@@ -39,7 +39,7 @@ router.get('/cities', async (req, res) => {
     }
   });
 
-  router.delete('/cities/:cityId', async (req, res) => {
+  app.delete('/cities/:cityId', async (req, res) => {
     try {
       const { cityId } = req.params;
       await City.findByIdAndDelete(cityId);
@@ -56,7 +56,7 @@ router.get('/cities', async (req, res) => {
 
 
 
-  router.get('/cities/:cityId/pincodes', async (req, res) => {
+  app.get('/cities/:cityId/pincodes', async (req, res) => {
     try {
       const { cityId } = req.params;
       const city = await City.findById(cityId);
@@ -71,7 +71,7 @@ router.get('/cities', async (req, res) => {
   });
 
   
-  router.put('/cities/:cityId/pincodes', async (req, res) => {
+  app.put('/cities/:cityId/pincodes', async (req, res) => {
     try {
       const { cityId } = req.params;
       const { pincodes } = req.body;
@@ -87,7 +87,7 @@ router.get('/cities', async (req, res) => {
   });
 
   
-  router.delete('/cities/:cityId/pincodes/:pincodeId', async (req, res) => {
+  app.delete('/cities/:cityId/pincodes/:pincodeId', async (req, res) => {
     try {
       const { cityId, pincodeId } = req.params;
       const city = await City.findById(cityId);
@@ -114,4 +114,4 @@ router.get('/cities', async (req, res) => {
   
 
 
-module.exports = router;
+module.exports = app;

@@ -1,11 +1,11 @@
 const express = require('express');
-const router = express.Router();
+const app = express.Router();
 const SubService = require('../../models/subService');
 const Service = require('../../models/service');
 
 
 
-router.post('/subservices', async (req, res) => {
+app.post('/subservices', async (req, res) => {
   try {
     const { name, price, service } = req.body;
     
@@ -26,7 +26,7 @@ router.post('/subservices', async (req, res) => {
 
 
 
-router.get('/subservices', async (req, res) => {
+app.get('/subservices', async (req, res) => {
   try {
     const subServices = await SubService.find();
     res.json(subServices);
@@ -35,7 +35,7 @@ router.get('/subservices', async (req, res) => {
   }
 });
 
-router.post('/subservices/by-pincode', async (req, res) => {
+app.post('/subservices/by-pincode', async (req, res) => {
   try {
     const { pincode, serviceId } = req.body;
 
@@ -58,7 +58,7 @@ router.post('/subservices/by-pincode', async (req, res) => {
 });
 
   
-router.get('/services/:serviceId', async (req, res) => {
+app.get('/services/:serviceId', async (req, res) => {
   try {
     const { serviceId } = req.params;
     const service = await Service.findById(serviceId);
@@ -74,7 +74,7 @@ router.get('/services/:serviceId', async (req, res) => {
 });
 
 
-router.put('/subservices/:subServiceId', async (req, res) => {
+app.put('/subservices/:subServiceId', async (req, res) => {
   try {
     const { subServiceId } = req.params;
     const { name, price, service } = req.body;
@@ -97,7 +97,7 @@ router.put('/subservices/:subServiceId', async (req, res) => {
 });
 
 
-router.delete('/subservices/:subServiceId', async (req, res) => {
+app.delete('/subservices/:subServiceId', async (req, res) => {
   try {
     const { subServiceId } = req.params;
     await SubService.findByIdAndDelete(subServiceId);
@@ -109,4 +109,4 @@ router.delete('/subservices/:subServiceId', async (req, res) => {
 
 
 
-module.exports = router;
+module.exports = app;

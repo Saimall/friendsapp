@@ -4,11 +4,15 @@ const session = require("express-session");
 const Booking = require('../../models/booking');
 const Service = require('../../models/service');
 const subService = require('../../models/subService');
+
+const app = express.Router();
 const bcrypt = require('bcrypt');
 
 const partnerService = require('../../models/partnerServices');
 const moment = require('moment');
 const otpMap = new Map();
+
+
 
 
 function generateOTP(length = 6) {
@@ -21,17 +25,7 @@ function generateOTP(length = 6) {
     return otp;
   }
 
-app.use(
-  session({
-   secret: "my-super-secret-key-21728172615261562",
-   resave: false,
-   saveUninitialized:false, 
-   cookie: {
-      maxAge: 24 * 60 * 60 * 1000, //24hours
-    },
-  })
-)
-// Endpoint for admin denial
+
 app.post('/partner/deny', async (req, res) => {
   try {
     const { id } = req.body;
@@ -378,6 +372,8 @@ app.put('/partner/:partnerId/status', async (req, res) => {
     res.status(500).json({ success: false, message: 'Error updating partner status.' });
   }
 });
+
+module.exports =app;
 
 
 
