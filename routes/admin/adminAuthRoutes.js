@@ -4,10 +4,13 @@ const bcrypt = require('bcrypt');
 
 
 
-const Admin=require('../models/adminAuth');
-const Partner=require('../models/partnerAutth');
-
-
+const Admin=require('../../models/adminAuth');
+const Partner=require('../../models/partnerAutth');
+const City=require('../../models/city');
+const Customer = require('../../models/customerAuth');
+const Booking = require('../../models/booking');
+const Review = require('../../models/review');
+const Service = require('../../models/service');
 
 const app = express.Router();
 
@@ -79,24 +82,7 @@ app.post('/admin/signup', async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * tags:
- *   name: Admin
- *   description: Admin authentication and management
- * 
- * /admin/admins:
- *   get:
- *     summary: Admin Details
- *     tags: [Admin]
- *     responses:
- *       201:
- *         description: Admin details fetched successfully
- *       400:
- *         description: Admin ID Invalid
- *       500:
- *         description: Internal server error
- */
+
 app.get('/admin/admins', async (req, res) => {
   try {
     const admins = await Admin.find();
@@ -112,7 +98,6 @@ app.get('/admin/admins', async (req, res) => {
 
 
 /**
- * @swagger
  * /admin/update-password/{adminId}:
  *   put:
  *     summary: Update admin's password
@@ -243,7 +228,6 @@ app.post('/admin/signin', async (req, res) => {
       return response.status(200).json(partners);
     }
 
-
-  })
+  });
 
 

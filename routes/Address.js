@@ -1,9 +1,9 @@
 const express = require('express');
-const router = express.Router();
+const app = express.Router();
 const Customer = require('../models/customer');
 
 // Create a new address for a customer
-router.post('/customers/:customerId/addresses', async (req, res) => {
+app.post('/customers/:customerId/addresses', async (req, res) => {
   try {
     const { customerId } = req.params;
     const { fullname, Phonenumber, Pincode, House, City,Addresstype} = req.body;
@@ -32,7 +32,7 @@ router.post('/customers/:customerId/addresses', async (req, res) => {
 });
 
 // Get all addresses for a customer
-router.get('/customers/:customerId/addresses', async (req, res) => {
+app.get('/customers/:customerId/addresses', async (req, res) => {
   try {
     const { customerId } = req.params;
     const customer = await Customer.findById(customerId);
@@ -47,7 +47,7 @@ router.get('/customers/:customerId/addresses', async (req, res) => {
 });
 
 // Update an address for a customer
-router.put('/customers/:customerId/addresses/:addressId', async (req, res) => {
+app.put('/customers/:customerId/addresses/:addressId', async (req, res) => {
   try {
     const { customerId, addressId } = req.params;
     const { name, contact, pincode, location, typeOfLocation } = req.body;
@@ -78,7 +78,7 @@ router.put('/customers/:customerId/addresses/:addressId', async (req, res) => {
 });
 
 // Delete an address for a customer
-router.delete('/customers/:customerId/addresses/:addressId', async (req, res) => {
+app.delete('/customers/:customerId/addresses/:addressId', async (req, res) => {
   try {
     const { customerId, addressId } = req.params;
 
@@ -100,4 +100,4 @@ router.delete('/customers/:customerId/addresses/:addressId', async (req, res) =>
   }
 });
 
-module.exports = router;
+module.exports = app;

@@ -1,11 +1,11 @@
 const express = require('express');
-const router = express.Router();
+const app = express.Router();
 const Service = require('../../models/service');
 const Customer = require('../../models/customerAuth');
 const Partner = require('../../models/partnerAutth');
-const { app } = require('firebase-admin');
+// const { app } = require('firebase-admin');
 
-router.post('/services', async (req, res) => {
+app.post('/services', async (req, res) => {
   try {
     const { name } = req.body;
     const service = new Service({ name });
@@ -16,7 +16,7 @@ router.post('/services', async (req, res) => {
   }
 });
 
-router.get('/services', async (req, res) => {
+app.get('/services', async (req, res) => {
     try {
       const services = await Service.find();
       res.json(services);
@@ -26,7 +26,7 @@ router.get('/services', async (req, res) => {
   });
 
 // Get all Daily Services
-router.get('/services/daily', async (req, res) => {
+app.get('/services/daily', async (req, res) => {
   try {
     const dailyServices = await Service.find({ type: 'Daily' }).populate('cities', 'name');
     res.json(dailyServices);
@@ -36,7 +36,7 @@ router.get('/services/daily', async (req, res) => {
 });
 
 // Get all Monthly Services
-router.get('/services/monthly', async (req, res) => {
+app.get('/services/monthly', async (req, res) => {
   try {
     const monthlyServices = await Service.find({ type: 'Monthly' }).populate('cities', 'name');
     res.json(monthlyServices);
@@ -46,7 +46,7 @@ router.get('/services/monthly', async (req, res) => {
 });
 
 
-router.post('/services/check-availability', async (req, res) => {
+app.post('/services/check-availability', async (req, res) => {
   try {
     const { cityId, serviceId } = req.body;
 
@@ -72,7 +72,7 @@ router.post('/services/check-availability', async (req, res) => {
   }
 });
 
-router.put('/services/:serviceId', async (req, res) => {
+app.put('/services/:serviceId', async (req, res) => {
     try {
       const { serviceId } = req.params;
       const { name } = req.body;
@@ -87,7 +87,7 @@ router.put('/services/:serviceId', async (req, res) => {
     }
   });
 
-  router.delete('/services/:serviceId', async (req, res) => {
+  app.delete('/services/:serviceId', async (req, res) => {
     try {
       const { serviceId } = req.params;
       await Service.findByIdAndDelete(serviceId);
@@ -98,7 +98,7 @@ router.put('/services/:serviceId', async (req, res) => {
   });
 
 
-  router.get('/Book/:Subserviceid/:customerid',async(request,response)=>{
+  app.get('/Book/:Subserviceid/:customerid',async(request,response)=>{
     try{
       const subServiceid = request.params.serviceid;
       const customerid = request.params.customerid
@@ -129,7 +129,7 @@ router.put('/services/:serviceId', async (req, res) => {
   });
 
   //adding new entry details need to give this url in frontend after clicking next
-  router.post('/Book/:serviceid/:customerid/new_entery', async(request,response)=>{
+  app.post('/Book/:serviceid/:customerid/new_entery', async(request,response)=>{
     const fullname = request.body.fullname;
     const phoneNumber = request.body.phoneNumber;
     const Pincode = request.body.Pincode;
@@ -188,7 +188,7 @@ router.put('/services/:serviceId', async (req, res) => {
 
   //rednering response-2 page
 
-  router.get("/Book/:serviceid/:customerid/details",async(request,response)=>{
+  app.get("/Book/:serviceid/:customerid/details",async(request,response)=>{
       
     //validating customer and service for every page
     const serviceid = request.params.serviceid;
@@ -218,7 +218,7 @@ router.put('/services/:serviceId', async (req, res) => {
 // ---------------------------------------------------------------------------------------------
 //cart adding
 
-router.post("/services/:customerid/addtocart", async(request,response)=>{
+app.post("/services/:customerid/addtocart", async(request,response)=>{
 
  
   const customerid = request.params.customerid;
@@ -237,7 +237,7 @@ router.post("/services/:customerid/addtocart", async(request,response)=>{
   }
 })
 
-router.get('/cart/:customerId', async (req, res) => {
+app.get('/cart/:customerId', async (req, res) => {
   try {
     const { customerId } = req.params;
     const customer = await Customer.findById(customerId);
@@ -249,7 +249,7 @@ router.get('/cart/:customerId', async (req, res) => {
   }
 });
 
-router.delete('/cart/:customerId/:subServiceId', async (req, res) => {
+app.delete('/cart/:customerId/:subServiceId', async (req, res) => {
   try {
     const { customerId, subServiceId } = req.params;
     const customer = await Customer.findById(customerId);
@@ -267,7 +267,7 @@ router.delete('/cart/:customerId/:subServiceId', async (req, res) => {
 });
 
 // Get available services based on selected city
-router.get('/services/:cityId', async (req, res) => {
+app.get('/services/:cityId', async (req, res) => {
   try {
     const { cityId } = req.params;
 
@@ -288,7 +288,7 @@ router.get('/services/:cityId', async (req, res) => {
 
 //Get available Daily service's on selected City 
 
-router.get('/services/:pincode/daily', async (req, res) => {
+app.get('/services/:pincode/daily', async (req, res) => {
   try {
     const { pincode } = req.params;
 
@@ -309,7 +309,7 @@ router.get('/services/:pincode/daily', async (req, res) => {
 
 //Get available Daily service's on selected City 
 
-router.get('/services/:pincode/Monthly', async (req, res) => {
+app.get('/services/:pincode/Monthly', async (req, res) => {
   try {
     const { pincode } = req.params;
 
@@ -331,7 +331,7 @@ router.get('/services/:pincode/Monthly', async (req, res) => {
 
 //Get Subservice's based on pincode and serviceId 
 
-router.get('/services/:serviceId/:pincode/subservices', async (req, res) => {
+app.get('/services/:serviceId/:pincode/subservices', async (req, res) => {
   try {
     const { serviceId, pincode } = req.params;
 
@@ -359,4 +359,4 @@ router.get('/services/:serviceId/:pincode/subservices', async (req, res) => {
 
 
 
-module.exports = router;
+module.exports = app;

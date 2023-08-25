@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const app = express.Router();
 const Booking = require('../models/booking');
 // const Razorpay = require('razorpay'); // Import Razorpay library
 const Customer = require('../models/customerAuth');
@@ -7,7 +7,7 @@ const Service = require('../models/service');
 const Partner = require('../models/partnerAutth');
 
 // POST /bookings
-router.post('/bookings', async (req, res) => {
+app.post('/bookings', async (req, res) => {
   try {
     const { customerId, subServiceId, address, bookingDate } = req.body; //handled in fornted**
 
@@ -46,7 +46,7 @@ router.post('/bookings', async (req, res) => {
 
 
 //booking all the services in carts
-router.post('/bookings-cart', async (req, res) => {
+app.post('/bookings-cart', async (req, res) => {
     try {
       const { customerId,cartItems , address, bookingDate } = req.body; //handled in fornted**
   
@@ -98,7 +98,7 @@ router.post('/bookings-cart', async (req, res) => {
 
 
   //updating customerreview
-  router.put('/service-requests/:requestId/customer-updatereview', async (req, res) => {
+  app.put('/service-requests/:requestId/customer-updatereview', async (req, res) => {
     try {
       const { requestId } = req.params;
       const { customerId, review } = req.body;
@@ -131,7 +131,7 @@ router.post('/bookings-cart', async (req, res) => {
   });
 
 //updating partner review
-  router.put('/service-requests/:requestId/partner-updatereview', async (req, res) => {
+  app.put('/service-requests/:requestId/partner-updatereview', async (req, res) => {
     try {
       const { requestId } = req.params;
       const { customerId, review } = req.body;
@@ -166,7 +166,7 @@ router.post('/bookings-cart', async (req, res) => {
 
   //get booked service by serviceId
 
-  router.get('/bookedservice/:serviceid',async(request,response)=>{
+  app.get('/bookedservice/:serviceid',async(request,response)=>{
 
     const serviceid = request.params.serviceid;
 
@@ -179,7 +179,7 @@ router.post('/bookings-cart', async (req, res) => {
 
   });
 
-  router.get('/bookingslist/:partnerid',async(request,response)=>{
+  app.get('/bookingslist/:partnerid',async(request,response)=>{
 
     const partnerid = requet.params.partnerid;
  const partner = Partner.findOne(partnerid);
@@ -191,4 +191,4 @@ router.post('/bookings-cart', async (req, res) => {
   })
 
 
-module.exports = router;
+module.exports = app;
