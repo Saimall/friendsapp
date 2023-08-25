@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Service = require('../models/service');
-const Customer = require('../models/customerAuth');
-const Partner = require('../models/partnerAutth');
+const Service = require('../../models/service');
+const Customer = require('../../models/customerAuth');
+const Partner = require('../../models/partnerAutth');
 const { app } = require('firebase-admin');
 
 router.post('/services', async (req, res) => {
