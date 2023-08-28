@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 
 
+const app = express.Router();
 
 const Admin=require('../../models/adminAuth');
 const Partner=require('../../models/partnerAutth');
@@ -11,8 +12,8 @@ const Customer = require('../../models/customerAuth');
 const Booking = require('../../models/booking');
 const Review = require('../../models/review');
 const Service = require('../../models/service');
+const { ObjectId } = require('mongodb');
 
-const app = express.Router();
 
 
 
@@ -131,36 +132,39 @@ app.get('/admin/admins', async (req, res) => {
  *         description: Internal server error
  */
 
+
+//done
 app.put('/admin/update-password/:adminId', async (req, res) => {
-    try {
-      const { adminId } = req.params;
-      const { oldPassword, newPassword } = req.body;
-  
-      // Find the admin by adminId
-      const admin = await Admin.findOne({ adminId: adminId });
-      if (!admin) {
-        return res.status(404).json({ message: 'Admin not found' });
-      }
-  
-      // Check if the old password is correct
-      const isPasswordValid = await bcrypt.compare(oldPassword, admin.password);
-      if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Invalid old password' });
-      }
-  
-      // Hash the new password
-      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-  
-      // Update the password
-      admin.password = hashedNewPassword;
-      await admin.save();
-  
-      res.status(200).json({ message: 'Password updated successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+  try {
+    const { adminId } = req.params;
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: 'Both oldPassword and newPassword are required' });
     }
-  });
+
+    const admin = await Admin.findOne({ _id:new ObjectId(adminId) });
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(oldPassword, admin.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid old password' });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    admin.password = hashedNewPassword;
+    await admin.save();
+
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
   
 
   // adminAuth.js (routes/adminAuth.js)
@@ -171,7 +175,7 @@ app.delete('/admin/delete-account/:adminId', async (req, res) => {
       const { adminId } = req.params;
   
       // Find the admin by adminId
-      const admin = await Admin.findOne({ adminId });
+      const admin = await Admin.findOne({ adminId: adminId });
       if (!admin) {
         return res.status(404).json({ message: 'Admin not found' });
       }
@@ -229,5 +233,7 @@ app.post('/admin/signin', async (req, res) => {
     }
 
   });
+
+  module.exports =app;
 
 
