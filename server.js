@@ -85,7 +85,7 @@ app.use(bodyParser.json());
 
 app.use(customerAuthRoutes);
 app.use(partnerAuthRoutes);
-// app.use(adminAuthRoutes);
+app.use(adminAuthRoutes);
 app.use(serviceRoutes);
 app.use(subServiceRoutes);
 app.use(bookingRoutes);
