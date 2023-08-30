@@ -6,7 +6,7 @@ const serviceSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  type: { type: String, enum: ['Daily', 'Monthly'], },
+  type: { type: String, enum: ['Daily', 'Monthly'], default:'Daily'},
   image:{
     type:String,
   }

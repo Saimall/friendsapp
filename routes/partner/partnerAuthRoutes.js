@@ -87,7 +87,7 @@ app.get('/partner/denied', async (req, res) => {
 });
 
 
-
+//after vrifying otp we call use this route in frontend to pass data
 //successed
 app.post('/partner/signup', async (req, res) => {
     try {
@@ -98,12 +98,12 @@ app.post('/partner/signup', async (req, res) => {
     if (existingPartner) {
       return res.status(409).json({ success: false, message: 'Email or contact already exists.' });
     }
-      const otp = generateOTP(); // Generate a 6-digit OTP
-      otpMap.set(contact, { otp, expiresAt: moment().add(5, 'minutes') });
+      // const otp = generateOTP(); // Generate a 6-digit OTP
+      // otpMap.set(contact, { otp, expiresAt: moment().add(5, 'minutes') });
 
     
-      console.log(otp)
-      const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+      // console.log(otp)
+      // const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
       const partner = new Partner({ name, contact, email, password: hashedPassword, city, otp });
       await partner.save();
@@ -116,6 +116,7 @@ app.post('/partner/signup', async (req, res) => {
   });
 
   //successed
+  //same for signin also after verifing otp we will use this route to signin
   app.post('/partner/signin', async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -168,35 +169,35 @@ app.post('/partner/signup', async (req, res) => {
 
 // Endpoint for OTP verification
 //successed
-app.post('/partner/verify/otp', async (req, res) => {
-  try {
-    const contact = req.body.contact;
-    const enteredOTP = req.body.otp;
-    console.log(contact,enteredOTP)
-    const storedOTPInfo = otpMap.get(contact);
+// app.post('/partner/verify/otp', async (req, res) => {
+//   try {
+//     const contact = req.body.contact;
+//     const enteredOTP = req.body.otp;
+//     console.log(contact,enteredOTP)
+//     const storedOTPInfo = otpMap.get(contact);
 
-    console.log('Stored OTP Info:', storedOTPInfo);
-    if (!storedOTPInfo) {
-        res.status(404).json({ message: 'OTP not found. Please generate a new OTP.' });
-        return;
-    }
+//     console.log('Stored OTP Info:', storedOTPInfo);
+//     if (!storedOTPInfo) {
+//         res.status(404).json({ message: 'OTP not found. Please generate a new OTP.' });
+//         return;
+//     }
 
-    if (moment().isAfter(storedOTPInfo.expiresAt)) {
-        otpMap.delete(phoneNumber);
-        res.status(400).json({ message: 'OTP expired. Please generate a new OTP.' });
-        return;
-    }
+//     if (moment().isAfter(storedOTPInfo.expiresAt)) {
+//         otpMap.delete(phoneNumber);
+//         res.status(400).json({ message: 'OTP expired. Please generate a new OTP.' });
+//         return;
+//     }
 
-    if (String(enteredOTP) === String(storedOTPInfo.otp)) {
-        otpMap.delete(contact);
-        res.json({ message: 'OTP verification successful.' });
-    } else {
-        res.status(401).json({ message: 'Invalid OTP.' });
-    }
-  }
-  catch(error){
-    res.json({message: "error occured in veriofying otp"})
-  }
+//     if (String(enteredOTP) === String(storedOTPInfo.otp)) {
+//         otpMap.delete(contact);
+//         res.json({ message: 'OTP verification successful.' });
+//     } else {
+//         res.status(401).json({ message: 'Invalid OTP.' });
+//     }
+//   }
+//   catch(error){
+//     res.json({message: "error occured in veriofying otp"})
+//   }
   //   const { email, enteredOTP,conatct } = req.body;
   //   console.log(enteredOTP)
   //   // Find the partner based on the ID
@@ -218,7 +219,7 @@ app.post('/partner/verify/otp', async (req, res) => {
   //   console.log(err);
   //   res.status(500).json({ success: false, message: 'Error verifying OTP.' });
   // }
-});
+
 
 // Endpoint for document submission
 //pending

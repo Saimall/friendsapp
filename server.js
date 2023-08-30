@@ -10,6 +10,9 @@ const partnerAuthRoutes=require('./routes/partner/partnerAuthRoutes');
 const serviceRoutes=require('./routes/services/serviceRoutes');
 const subServiceRoutes=require('./routes/services/subServiceRoutes');
 const bookingRoutes=require('./routes/booking');
+const otpvalidation = require('./routes/otpvalidation');
+const customer = require('./routes/customer/customer');
+const profile = require('./routes/customer/profile')
 const app = express();
 
 
@@ -85,10 +88,13 @@ app.use(bodyParser.json());
 
 app.use(customerAuthRoutes);
 app.use(partnerAuthRoutes);
+app.use(profile)
 app.use(adminAuthRoutes);
 app.use(serviceRoutes);
 app.use(subServiceRoutes);
 app.use(bookingRoutes);
+app.use(otpvalidation)
+app.use(customer)
 
 // Set up MongoDB connection
 mongoose

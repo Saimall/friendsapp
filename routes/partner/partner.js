@@ -28,9 +28,9 @@ const partnerService = require('../../models/partnerServices');
       // Get the list of cities where the partner provides services
       const serviceCities = partner.city;
   
-      res.json(serviceCities);
+      return res.json(serviceCities);
     } catch (err) {
-      res.status(500).json({ error: 'Unable to fetch partner service cities.' });
+      return res.status(500).json({ error: 'Unable to fetch partner service cities.' });
     }
   });
   
@@ -52,10 +52,10 @@ const partnerService = require('../../models/partnerServices');
       // Save the updated partner
       await partner.save();
   
-      res.json({ success: true, message: `Partner is now ${status}.` });
+      return res.json({ success: true, message: `Partner is now ${status}.` });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ success: false, message: 'Error updating partner status.' });
+      return res.status(500).json({ success: false, message: 'Error updating partner status.' });
     }
   });
   
@@ -64,10 +64,10 @@ const partnerService = require('../../models/partnerServices');
   app.get('/partners/ongoing', async (req, res) => {
     try {
       const ongoingPartners = await Partner.find({ partnerworkstatus: 'Ongoing' });
-      res.json({ success: true, partners: ongoingPartners });
+      return res.json({ success: true, partners: ongoingPartners });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ success: false, message: 'Error fetching partners with ongoing work status.' });
+      return res.status(500).json({ success: false, message: 'Error fetching partners with ongoing work status.' });
     }
   });
   
@@ -75,10 +75,10 @@ const partnerService = require('../../models/partnerServices');
   app.get('/partners/upcoming', async (req, res) => {
     try {
       const upcomingPartners = await Partner.find({ partnerworkstatus: 'Upcoming' });
-      res.json({ success: true, partners: upcomingPartners });
+      return res.json({ success: true, partners: upcomingPartners });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ success: false, message: 'Error fetching partners with upcoming work status.' });
+     return res.status(500).json({ success: false, message: 'Error fetching partners with upcoming work status.' });
     }
   });
   
@@ -86,10 +86,10 @@ const partnerService = require('../../models/partnerServices');
   app.get('/partners/completed', async (req, res) => {
     try {
       const completedPartners = await Partner.find({ partnerworkstatus: 'Completed' });
-      res.json({ success: true, partners: completedPartners });
+      return res.json({ success: true, partners: completedPartners });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ success: false, message: 'Error fetching partners with completed work status.' });
+     return res.status(500).json({ success: false, message: 'Error fetching partners with completed work status.' });
     }
   });
   
@@ -119,10 +119,10 @@ const partnerService = require('../../models/partnerServices');
         },
       ]);
   
-      res.status(200).json({ totalEarnings: totalEarnings[0]?.total || 0 });
+      return res.status(200).json({ totalEarnings: totalEarnings[0]?.total || 0 });
     } catch (error) {
       console.error('Error calculating total earnings:', error);
-      res.status(500).json({ message: 'Server error' });
+     return  res.status(500).json({ message: 'Server error' });
     }
   });
   
@@ -152,10 +152,10 @@ const partnerService = require('../../models/partnerServices');
         },
       ]);
   
-      res.json({ totalEarnings: totalEarnings[0]?.total || 0 });
+      return res.json({ totalEarnings: totalEarnings[0]?.total || 0 });
     } catch (error) {
       console.error('Error calculating total earnings:', error);
-      res.status(500).json({ message: 'Server error' });
+     return res.status(500).json({ message: 'Server error' });
     }
   });
   
@@ -181,10 +181,10 @@ const partnerService = require('../../models/partnerServices');
         return res.status(404).json({ message: 'Service not found' });
       }
        await Service.save();
-      res.json(updatedService);
+      return res.json(updatedService);
     } catch (error) {
       console.error('Error updating service status:', error);
-      res.status(500).json({ message: 'Server error' });
+      return res.status(500).json({ message: 'Server error' });
     }
   });
   
@@ -265,7 +265,7 @@ const partnerService = require('../../models/partnerServices');
   //Get Review’s Given to Customer and Got by CUstomer
   app.get("/booking",async(request,response)=>{
   
-    bookingslist = Booking.find() //getting all reviews
+    bookingslist = await Booking.find() //getting all reviews
   
    if(bookingslist.length == 0 ){
     return response.status(403).json({message:"empty bokkings"});
@@ -289,7 +289,7 @@ const partnerService = require('../../models/partnerServices');
     if(!partnerid){
       return response.status(403).json({message:"invalid id"});
     }
-    const partner = Partner.findOne(partnerid);
+    const partner = await Partner.findOne(partnerid);
     if(partner){
       return response.status(403).json({message:"invalid partner"});
     }
@@ -316,7 +316,7 @@ const partnerService = require('../../models/partnerServices');
         { new: true } // Return the updated document
       );
   
-      if (!updatedPartner) {
+      if (!updatedpartner) {
         return response.status(404).json({ message: "Partner not found" });
       }
       await Partner.save();
@@ -348,16 +348,16 @@ const partnerService = require('../../models/partnerServices');
   
   //myservices
   
-  app.get("/partnerservices/:partnerid",async(resquest,response)=>{
+  app.get("/partnerservices/:partnerid",async(request,response)=>{
   
     const partnerid= request.params.partnerid;
   
-    const partner = Partner.findOne(partnerid);
+    const partner = await Partner.findOne(partnerid);
     const listserviceids = partner.serviceassigned;
     let list_services_montly=[];
     let list_services_daily=[];
     for(let i=0;i<listserviceids.length;i++){
-       const service = Service.findById(listserviceids[0]);
+       const service = await Service.findById(listserviceids[0]);
        if(service.type=='Monthly'){
         list_services_montly.push(service);
        }
@@ -376,7 +376,7 @@ const partnerService = require('../../models/partnerServices');
   app.get("/partnersservicesformodify/:partnerid",async(request,response)=>{
   
     const partnerid = request.params.partnerid;
-    const partner = Partner.findById(partnerid);
+    const partner = await Partner.findById(partnerid);
     if(!partner){
       return response.status(400).json({message:"invalid partner"});
     }
@@ -384,7 +384,7 @@ const partnerService = require('../../models/partnerServices');
     const serviceidslist = partner.serviceassigned;  
     let servicelist = [];
     for(let i=0;i<serviceidslist.length;i++){
-            const service = Service.findById(serviceidslist[i]);
+            const service = await Service.findById(serviceidslist[i]);
             servicelist.push(service);     
     }
     return response.status(200).json(servicelist);
@@ -398,7 +398,7 @@ const partnerService = require('../../models/partnerServices');
     if(!service){
       return response.status(400).json({message:"invalid partner"});
     }
-    const Subservice = subService.find({ _id:serviceid}); //getting list of sub services
+    const Subservice = await subService.find({ _id:serviceid}); //getting list of sub services
   if(!Subservice){
     return response.status(420).json({message:"invalid Subservice"});
   }
@@ -413,18 +413,18 @@ const partnerService = require('../../models/partnerServices');
   
     const serviceid = request.params.serviceid;
     
-    const partnerservice = partnerService.findById(serviceid);
+    const partnerservice = await partnerService.findById(serviceid);
   
     return response.status(200).json(partnerservice);
   
   })
   
-  app.post("/updating service",async(request,response)=>{
+  // app.post("/updating service",async(request,response)=>{
   
-    const {subservice,city,servingpincodes} = request.body;
+  //   const {subservice,city,servingpincodes} = request.body;
   
     
-  })
+  // })
 
 
   module.exports = app;
