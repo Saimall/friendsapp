@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express.Router();
-const Customer = require('../models/customer');
+const Customer = require('../../models/customerAuth');
 
 // Update customer profile
 app.put('/customers/:customerId', async (req, res) => {
@@ -26,6 +26,7 @@ app.put('/customers/:customerId', async (req, res) => {
   }
 });
 
+//used to render edit password page
 app.get('/customers/:customerId/editpassword',async(req,res)=>{
 
     const customerid = request.params.customerId;
@@ -42,17 +43,18 @@ app.put('/customers/:customerId/editpassword', async (req, res) => {
     try {
       const { customerId } = req.params;
       const {oldpasswordcustomer,newpassword } = req.body;
-      const customer = Customer.findOne(customerId);
+      const customer = await Customer.findById({_id:customerId});
       if(!customer){
-        return res.status(404).json({ error: 'Customer not found.' });
+        return  res.status(404).json({ error: 'Customer not found.' });
       }
       const oldpassword = customer.password;
+      console.log(oldpassword)
       const isPasswordValid = oldpassword==oldpasswordcustomer? true :false; 
       if(!isPasswordValid){
-        res.status(404).json({message:"current password is incorrect"});
+        return res.status(404).json({message:"current password is incorrect"});
       }
       if(oldpassword==newpassword){
-        res.status(420).json({message:"old password is same as existing password"});
+        return res.status(420).json({message:"old password is same as existing password"});
       }
   
       const updatedCustomer = await Customer.findByIdAndUpdate(
@@ -63,9 +65,9 @@ app.put('/customers/:customerId/editpassword', async (req, res) => {
         { new: true }
       );
   
-      res.status(200).json(updatedCustomer);
+     return  res.status(200).json(updatedCustomer);
     } catch (err) {
-      res.status(500).json({ error: 'Unable to edit password.' });
+      return res.status(500).json({ error: 'Unable to edit password.' });
     }
   });
 

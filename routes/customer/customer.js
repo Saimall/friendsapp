@@ -2,23 +2,21 @@
 
 const express = require('express');
 const Customer = require('../../models/customerAuth');
+const Booking = require('../../models/booking');
 
 
 
 const app = express.Router();
 
-
-
-
-
-
-
-
-
-
-
-
-
+function generateOTP(length = 6) {
+  const chars = '0123456789'; // characters from which OTP will be generated
+  let otp = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    otp += chars[randomIndex];  
+  }
+  return otp;
+}
 
 app.get('/customer', async (req, res) => {
     try {
@@ -35,6 +33,7 @@ app.get('/customer', async (req, res) => {
     try {
       const { customerId } = req.params;
   
+       console.log(customerId)
       // Find the customer by ID
       const customer = await Customer.findById(customerId);
       if (!customer) {

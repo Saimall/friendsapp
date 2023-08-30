@@ -2,18 +2,20 @@ const express = require('express');
 const Customer = require('../../models/customerAuth');
 const Booking = require('../../models/booking');
 
+const otpvalidation = require('../../models/otpvalidation');
+
+
 const app = express.Router();
 
-
 function generateOTP(length = 6) {
-    const chars = '0123456789'; // characters from which OTP will be generated
-    let otp = '';
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * chars.length);
-      otp += chars[randomIndex];
-    }
-    return otp;
+  const chars = '0123456789'; // characters from which OTP will be generated
+  let otp = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    otp += chars[randomIndex];  
   }
+  return otp;
+}
 
 // ***************************************Customers*****************************************
 
@@ -28,12 +30,6 @@ app.post('/customer/signup', async (req, res) => {
     }
 
       const otp = generateOTP(); // Generate a 6-digit OTP
-
-      // Send OTP via Twilio
-      // await sendOtpViaTwilio(contact, otp);
-  
-      // Create a new partner document with signup data and OTP
-      console.log(otp)
       const customer = new Customer({ name, contact, email, password, otp });
       await customer.save();
   
@@ -72,36 +68,36 @@ app.post('/customer/signup', async (req, res) => {
     }
   });
 
-  app.post('/customer/verify/otp', async (req, res) => {
-    try {
-      const { email, enteredOTP } = req.body;
+  // app.post('/customer/verify/otp', async (req, res) => {
+  //   try {
+  //     const { email, enteredOTP } = req.body;
       
-    const storedOTPInfo = otpMap.get(email);
+  //   const storedOTPInfo = otpMap.get(email);
 
-    console.log('Stored OTP Info:', storedOTPInfo);
-    if (!storedOTPInfo) {
-        res.status(404).json({ message: 'OTP not found. Please generate a new OTP.' });
-        return;
-    }
+  //   console.log('Stored OTP Info:', storedOTPInfo);
+  //   if (!storedOTPInfo) {
+  //       res.status(404).json({ message: 'OTP not found. Please generate a new OTP.' });
+  //       return;
+  //   }
 
-    if (moment().isAfter(storedOTPInfo.expiresAt)) {
-        otpMap.delete(email);
-        res.status(400).json({ message: 'OTP expired. Please generate a new OTP.' });
-        return;
-    }
+  //   if (moment().isAfter(storedOTPInfo.expiresAt)) {
+  //       otpMap.delete(email);
+  //       res.status(400).json({ message: 'OTP expired. Please generate a new OTP.' });
+  //       return;
+  //   }
 
-    if (String(enteredOTP) === String(storedOTPInfo.otp)) {
-        otpMap.delete(contact);
-        res.status(200).json({ message: 'OTP verification successful.' });
-    } else {
-        res.status(401).json({ message: 'Invalid OTP.' });
-    }
-      // OTP is valid, send success response
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ success: false, message: 'Error verifying OTP.' });
-    }
-  });
+  //   if (String(enteredOTP) === String(storedOTPInfo.otp)) {
+  //       otpMap.delete(contact);
+  //       res.status(200).json({ message: 'OTP verification successful.' });
+  //   } else {
+  //       res.status(401).json({ message: 'Invalid OTP.' });
+  //   }
+  //     // OTP is valid, send success response
+  //   } catch (err) {
+  //     console.log(err);
+  //     res.status(500).json({ success: false, message: 'Error verifying OTP.' });
+  //   }
+  // });
 
   
 
