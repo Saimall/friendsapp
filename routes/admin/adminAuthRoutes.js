@@ -128,6 +128,25 @@ app.get("/admin/user/:role", async (request, response) => {
   const { role } = request.params;
   let data = [];
 
+<<<<<<< HEAD
+  const {role} = request.params;
+  let data =[]
+  if(role === 'superadmin'){
+    data  = await Admin.find({role: "superadmin"});
+    return response.status(200).json(data);
+  }
+ else if(role === 'supportteam'){
+    data  = await Admin.find({role: "supportteam"});
+    return response.status(200).json(data);
+  }
+ else if(role === 'dutymanager'){
+    data  = await Admin.find({role: "dutymanager"});
+    return response.status(200).json(data);
+  }
+  else {
+    data  = await Admin.find({role: "approvalteam"});
+    return response.status(200).json(data);
+=======
   if (role === "superadmin") {
     data = await Admin.find({ role: "superadmin" });
   } else if (role === "supportteam") {
@@ -136,6 +155,7 @@ app.get("/admin/user/:role", async (request, response) => {
     data = await Admin.find({ role: "dutymanager" });
   } else {
     data = await Admin.find({ role: "approvalteam" });
+>>>>>>> 94e4afadf3a0eb7eb9b9095ee877e589b58aa142
   }
 
   return response.status(200).json(data);
@@ -146,12 +166,17 @@ app.get("/admin/user/:role", async (request, response) => {
 app.put("/admin/update-profile/:adminId", async (req, res) => {
   try {
     const { adminId } = req.params;
-    const { newPassword, newRole, phoneNumber } = req.body;
+    const {newemail, newPassword, newRole, newname,phoneNumber } = req.body;
 
+<<<<<<< HEAD
+    if (!newPassword && !newRole && !phoneNumber&& !newemail && !newname) {
+      return res.status(400).json({ message: 'At least one attribute should be provided for modification' });
+=======
     if (!newPassword && !newRole && !phoneNumber) {
       return res.status(400).json({
         message: "At least one attribute should be provided for modification",
       });
+>>>>>>> 94e4afadf3a0eb7eb9b9095ee877e589b58aa142
     }
 
     const admin = await Admin.findOne({ _id: new ObjectId(adminId) });
@@ -174,6 +199,12 @@ app.put("/admin/update-profile/:adminId", async (req, res) => {
 
     if (phoneNumber) {
       admin.phoneNumber = phoneNumber;
+    }
+    if (newemail) {
+      admin.email = newemail;
+    }
+    if (newname) {
+      admin.name = newname;
     }
 
     await admin.save();
