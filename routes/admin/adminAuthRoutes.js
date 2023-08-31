@@ -1,21 +1,16 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-
-
+const express = require("express");
+const bcrypt = require("bcrypt");
 
 const app = express.Router();
 
-const Admin=require('../../models/adminAuth');
-const Partner=require('../../models/partnerAutth');
-const City=require('../../models/city');
-const Customer = require('../../models/customerAuth');
-const Booking = require('../../models/booking');
-const Review = require('../../models/review');
-const Service = require('../../models/service');
-const { ObjectId } = require('mongodb');
-
-
-
+const Admin = require("../../models/adminAuth");
+const Partner = require("../../models/partnerAutth");
+const City = require("../../models/city");
+const Customer = require("../../models/customerAuth");
+const Booking = require("../../models/booking");
+const Review = require("../../models/review");
+const Service = require("../../models/service");
+const { ObjectId } = require("mongodb");
 
 /**
  * @swagger
@@ -37,7 +32,7 @@ const { ObjectId } = require('mongodb');
  *               password:
  *                 type: string
  *                 example: password123
- * 
+ *
  * /admin/signup:
  *   post:
  *     summary: Sign up a new admin
@@ -53,44 +48,45 @@ const { ObjectId } = require('mongodb');
  *         description: Internal server error
  */
 
-
-app.post('/admin/signup', async (req, res) => {
+app.post("/admin/signup", async (req, res) => {
   try {
-    const { name,phonenumber,email,password,role } = req.body;
+    const { name, phonenumber, email, password, role } = req.body;
 
     // Check if adminId already exists
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
-      return res.status(400).json({ message: 'Admin ID already exists' });
+      return res.status(400).json({ message: "Admin ID already exists" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
-   
     const newAdmin = new Admin({
-      name,phonenumber,email,password:hashedPassword,role
+      name,
+      phonenumber,
+      email,
+      password: hashedPassword,
+      role,
     });
     await newAdmin.save();
-    return res.status(201).json({ message: 'Admin registered successfully' });
+    return res.status(201).json({ message: "Admin registered successfully" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
 //to retrive all admins
-app.get('/admin/admins', async (req, res) => {
+app.get("/admin/admins", async (req, res) => {
   try {
     const admins = await Admin.find();
     return res.status(200).json(admins);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
 // adminAuth.js (routes/adminAuth.js)
 // ... (previous code)
-
 
 /**
  * /admin/update-password/{adminId}:
@@ -127,52 +123,46 @@ app.get('/admin/admins', async (req, res) => {
  */
 //
 
-
 //get user by role
-app.get('/admin/user/:role',async(request,response)=>{
+app.get("/admin/user/:role", async (request, response) => {
+  const { role } = request.params;
+  let data = [];
 
-  const {role} = request.params;
-  const data =[]
-  if(role === 'superadmin'){
-    data  = Admin.find({role: "superadmin"});
-    return response.status(200).json(data);
-  }
- else if(role === 'supportteam'){
-    data  = Admin.find({role: "supportteam"});
-    return response.status(200).json(data);
-  }
- else if(role === 'dutymanager'){
-    data  = Admin.find({role: "dutymanager"});
-    return response.status(200).json(data);
-  }
-  else {
-    data  = Admin.find({role: "approvalteam"});
-    return response.status(200).json(data);
+  if (role === "superadmin") {
+    data = await Admin.find({ role: "superadmin" });
+  } else if (role === "supportteam") {
+    data = await Admin.find({ role: "supportteam" });
+  } else if (role === "dutymanager") {
+    data = await Admin.find({ role: "dutymanager" });
+  } else {
+    data = await Admin.find({ role: "approvalteam" });
   }
 
+  return response.status(200).json(data);
 });
-
 
 //updating profile
 
-app.put('/admin/update-profile/:adminId', async (req, res) => {
+app.put("/admin/update-profile/:adminId", async (req, res) => {
   try {
     const { adminId } = req.params;
     const { newPassword, newRole, phoneNumber } = req.body;
 
     if (!newPassword && !newRole && !phoneNumber) {
-      return res.status(400).json({ message: 'At least one attribute should be provided for modification' });
+      return res.status(400).json({
+        message: "At least one attribute should be provided for modification",
+      });
     }
 
     const admin = await Admin.findOne({ _id: new ObjectId(adminId) });
     if (!admin) {
-      return res.status(404).json({ message: 'Admin not found' });
+      return res.status(404).json({ message: "Admin not found" });
     }
 
     if (newPassword) {
       const isPasswordValid = await bcrypt.compare(oldPassword, admin.password);
       if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Invalid password' });
+        return res.status(401).json({ message: "Invalid password" });
       }
       const hashedNewPassword = await bcrypt.hash(newPassword, 10);
       admin.password = hashedNewPassword;
@@ -188,33 +178,33 @@ app.put('/admin/update-profile/:adminId', async (req, res) => {
 
     await admin.save();
 
-    return res.status(200).json({ message: 'Profile updated successfully' });
+    return res.status(200).json({ message: "Profile updated successfully" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
-
-
 //done
-app.put('/admin/update-password/:adminId', async (req, res) => {
+app.put("/admin/update-password/:adminId", async (req, res) => {
   try {
     const { adminId } = req.params;
     const { oldPassword, newPassword } = req.body;
 
     if (!oldPassword || !newPassword) {
-      return res.status(400).json({ message: 'Both oldPassword and newPassword are required' });
+      return res
+        .status(400)
+        .json({ message: "Both oldPassword and newPassword are required" });
     }
 
-    const admin = await Admin.findOne({ _id:new ObjectId(adminId) });
+    const admin = await Admin.findOne({ _id: new ObjectId(adminId) });
     if (!admin) {
-      return res.status(404).json({ message: 'Admin not found' });
+      return res.status(404).json({ message: "Admin not found" });
     }
 
     const isPasswordValid = await bcrypt.compare(oldPassword, admin.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid old password' });
+      return res.status(401).json({ message: "Invalid old password" });
     }
 
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
@@ -222,80 +212,72 @@ app.put('/admin/update-password/:adminId', async (req, res) => {
     admin.password = hashedNewPassword;
     await admin.save();
 
-    return res.status(200).json({ message: 'Password updated successfully' });
+    return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
-  
-
-  // adminAuth.js (routes/adminAuth.js)
+// adminAuth.js (routes/adminAuth.js)
 // ... (previous code)
 
-app.delete('/admin/delete-account/:adminId', async (req, res) => {
-    try {
-      const { adminId } = req.params;
-  
-      // Find the admin by adminId
-      const admin = await Admin.findOne({ adminId: adminId });
-      if (!admin) {
-        return res.status(404).json({ message: 'Admin not found' });
-      }
-  
-      // Delete the admin account
-      await Admin.deleteOne({ adminId });
-  
-      res.status(200).json({ message: 'Admin account deleted successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
+app.delete("/admin/delete-account/:adminId", async (req, res) => {
+  try {
+    const { adminId } = req.params;
 
-  
-  // adminAuth.js (routes/adminAuth.js)
+    // Find the admin by adminId
+    const admin = await Admin.findOne({ adminId: adminId });
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    // Delete the admin account
+    await Admin.deleteOne({ adminId });
+
+    res.status(200).json({ message: "Admin account deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// adminAuth.js (routes/adminAuth.js)
 // ... (previous code)
 
-app.post('/admin/signin', async (req, res) => {
-    try {
-      const {email,password } = req.body;
-  
-      // Find the admin by adminId
-      const admin = await Admin.findOne({email});
-      if (!admin) {
-        return res.status(401).json({ message: 'Invalid admin email' });
-      }
-  
-      // Compare the provided password with the stored hashed password
-      const isPasswordValid = await bcrypt.compare(password, admin.password);
-      if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Invalid  password' });
-      }
-     return  res.status(200).json(admin);
-    } catch (error) {
-      console.error(error);
-     return res.status(500).json({ message: 'Internal server error' });
+app.post("/admin/signin", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find the admin by adminId
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({ message: "Invalid admin email" });
     }
-  });
+
+    // Compare the provided password with the stored hashed password
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid  password" });
+    }
+    return res.status(200).json(admin);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 //done verification of routes till this
-//get partners details 
+//get partners details
 //successed
-  app.get('/admin/admins/partnersdetails',async(request,response)=>{
-  
-    const partners = await Partner.find({status:'Verified'});
-    console.log(partners);
-    if(!partners){
-      return response.status(401).json({message:"invalid partner"});
-    }
-    else{
-      return response.status(200).json(partners);
-    }
+app.get("/admin/admins/partnersdetails", async (request, response) => {
+  const partners = await Partner.find({ status: "Verified" });
+  console.log(partners);
+  if (!partners) {
+    return response.status(401).json({ message: "invalid partner" });
+  } else {
+    return response.status(200).json(partners);
+  }
+});
 
-  });
-
-  module.exports =app;
-
-
+module.exports = app;
