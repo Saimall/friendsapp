@@ -69,10 +69,10 @@ app.get('/partner/unverified', async (req, res) => {
 app.get('/partner/verified', async (req, res) => {
   try {
     const verifiedPartners = await Partner.find({ status: 'Verified' });
-    res.json({ success: true, partners: verifiedPartners });
+    return res.json({ success: true, partners: verifiedPartners });
   } catch (err) {
     console.log(err)
-    res.status(500).json({ success: false, message: 'Error fetching verified partners.' });
+    return res.status(500).json({ success: false, message: 'Error fetching verified partners.' });
   }
 });
 
@@ -80,9 +80,9 @@ app.get('/partner/verified', async (req, res) => {
 app.get('/partner/denied', async (req, res) => {
   try {
     const deniedPartners = await Partner.find({ status: 'Denied' });
-    res.json({ success: true, partners: deniedPartners });
+    return res.json({ success: true, partners: deniedPartners });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Error fetching denied partners.' });
+    return res.status(500).json({ success: false, message: 'Error fetching denied partners.' });
   }
 });
 
@@ -108,10 +108,10 @@ app.post('/partner/signup', async (req, res) => {
       const partner = new Partner({ name, contact, email, password: hashedPassword, city, otp });
       await partner.save();
   
-      res.json({ success: true, message: 'OTP sent for verification.' });
+      return res.json({ success: true, message: 'OTP sent for verification.' });
     } catch (err) {
       console.log(err)
-      res.status(500).json({ success: false, message: 'Error signing up.' });
+      return res.status(500).json({ success: false, message: 'Error signing up.' });
     }
   });
 
@@ -140,10 +140,10 @@ app.post('/partner/signup', async (req, res) => {
       // Password is correct, create a session or token to authenticate the user (not shown in this example)
       // You can use JSON Web Tokens (JWT) or a session-based approach for authentication.
   
-      res.status(200).json(partner);
+      return res.status(200).json(partner);
     } catch (err) {
       console.log(err);
-      res.status(500).json({ success: false, message: 'Error signing in.' });
+      return res.status(500).json({ success: false, message: 'Error signing in.' });
     }
   });
 
@@ -238,9 +238,9 @@ app.post('/partner/verify/documents', async (req, res) => {
     partner.status = 'Unverified';
     await partner.save();
 
-    res.json({ success: true, message: 'Verification successful. Partner added to partner request.' });
+    return res.json({ success: true, message: 'Verification successful. Partner added to partner request.' });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Error verifying and submitting documents.' });
+    return res.status(500).json({ success: false, message: 'Error verifying and submitting documents.' });
   }
 });
 
@@ -261,9 +261,9 @@ app.post('/partner/approve', async (req, res) => {
     partner.status = 'Verified';
     await partner.save();
 
-    res.json({ success: true, message: 'Partner successfully approved.' });
+    return res.json({ success: true, message: 'Partner successfully approved.' });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Error approving partner request.' });
+    return res.status(500).json({ success: false, message: 'Error approving partner request.' });
   }
 });
 
@@ -282,18 +282,18 @@ app.post('/partner/deny', async (req, res) => {
     partner.status = 'Denied';
     await partner.save();
 
-    res.json({ success: true, message: 'Partner request denied.' });
+    return res.json({ success: true, message: 'Partner request denied.' });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Error denying partner request.' });
+    return res.status(500).json({ success: false, message: 'Error denying partner request.' });
   }
 });
 
 app.get('/partner', async (req, res) => {
     try {
       const partner = await Partner.find();
-      res.json({ success: true, partners: partner });
+      return res.json({ success: true, partners: partner });
     } catch (err) {
-      res.status(500).json({ success: false, message: 'Error fetching unverified partners.' });
+      return res.status(500).json({ success: false, message: 'Error fetching unverified partners.' });
     }
   });
 
@@ -301,9 +301,9 @@ app.get('/partner', async (req, res) => {
 app.get('/partner/unverified', async (req, res) => {
   try {
     const unverifiedPartners = await Partner.find({ status: 'Unverified' });
-    res.json({ success: true, partners: unverifiedPartners });
+    return res.json({ success: true, partners: unverifiedPartners });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Error fetching unverified partners.' });
+    return res.status(500).json({ success: false, message: 'Error fetching unverified partners.' });
   }
 });
 
@@ -311,10 +311,10 @@ app.get('/partner/unverified', async (req, res) => {
 app.get('/partner/verified', async (req, res) => {
   try {
     const verifiedPartners = await Partner.find({ status: 'Verified' });
-    res.json({ success: true, partners: verifiedPartners });
+    return res.json({ success: true, partners: verifiedPartners });
   } catch (err) {
     console.log(err)
-    res.status(500).json({ success: false, message: 'Error fetching verified partners.' });
+    return res.status(500).json({ success: false, message: 'Error fetching verified partners.' });
   }
 });
 
@@ -322,9 +322,9 @@ app.get('/partner/verified', async (req, res) => {
 app.get('/partner/denied', async (req, res) => {
   try {
     const deniedPartners = await Partner.find({ status: 'Denied' });
-    res.json({ success: true, partners: deniedPartners });
+    return res.json({ success: true, partners: deniedPartners });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Error fetching denied partners.' });
+    return res.status(500).json({ success: false, message: 'Error fetching denied partners.' });
   }
 });
 
@@ -343,9 +343,9 @@ app.get('/partners/:partnerId/city', async (req, res) => {
     // Get the list of cities where the partner provides services
     const serviceCities = partner.city;
 
-    res.json(serviceCities);
+    return  res.json(serviceCities);
   } catch (err) {
-    res.status(500).json({ error: 'Unable to fetch partner service cities.' });
+    return res.status(500).json({ error: 'Unable to fetch partner service cities.' });
   }
 });
 
@@ -367,10 +367,10 @@ app.put('/partner/:partnerId/status', async (req, res) => {
     // Save the updated partner
     await partner.save();
 
-    res.json({ success: true, message: `Partner is now ${status}.` });
+    return res.json({ success: true, message: `Partner is now ${status}.` });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: 'Error updating partner status.' });
+    return res.status(500).json({ success: false, message: 'Error updating partner status.' });
   }
 });
 
