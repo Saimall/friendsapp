@@ -224,7 +224,7 @@ const app = express.Router();
       return response.status(404).json({ message: "Admin not found" });
     }
   
-    // Check if the entered name and email are the same as the current admin's name and email
+    // Check if the entered name  email are the same as the current admin's name and email
     if (fullname === admin.fullname && email === admin.email) {
       return response.status(420).json({ message: "Entered name and email are the same" });
     }
