@@ -170,7 +170,7 @@ app.put("/admin/update-profile/:adminId", async (req, res) => {
     }
 
     if (phoneNumber) {
-      admin.phoneNumber = phoneNumber;
+      admin.phonenumber = phoneNumber;
     }
     if (newemail) {
       admin.email = newemail;
