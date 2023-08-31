@@ -8,7 +8,7 @@ const citySchema = new mongoose.Schema({
     unique: true,
   },
   pincodes: [{
-    type: String,
+    type: Number,
     required: true,
   }],
   

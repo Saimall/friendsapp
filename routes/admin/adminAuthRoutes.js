@@ -193,6 +193,24 @@ app.put("/admin/update-profile/:adminId", async (req, res) => {
   }
 });
 
+//get admin by ID
+app.get("/admin/:adminId", async (req, res) => {
+  try {
+    const { adminId } = req.params;
+   
+    const admin = await Admin.findOne({ _id: new ObjectId(adminId) });
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+    return res.status(200).json(admin);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
 //done
 app.put("/admin/update-password/:adminId", async (req, res) => {
   try {
