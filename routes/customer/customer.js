@@ -21,9 +21,9 @@ function generateOTP(length = 6) {
 app.get('/customer', async (req, res) => {
     try {
       const customers = await Customer.find();
-      res.json({ success: true, customers });
+      return  res.json({ success: true, customers });
     } catch (err) {
-      res.status(500).json({ success: false, message: 'Error fetching customers.' });
+      return res.status(500).json({ success: false, message: 'Error fetching customers.' });
     }
   });
 
@@ -43,9 +43,9 @@ app.get('/customer', async (req, res) => {
       // Find service requests associated with the customer
       const serviceHistory = await Booking.find({ customer: customerId }).populate('subService');
   
-      res.json(serviceHistory);
+      return res.json(serviceHistory);
     } catch (err) {
-      res.status(500).json({ error: 'Unable to fetch service history.' });
+      return res.status(500).json({ error: 'Unable to fetch service history.' });
     }
   });
 

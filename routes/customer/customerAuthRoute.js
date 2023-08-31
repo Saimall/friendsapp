@@ -33,10 +33,10 @@ app.post('/customer/signup', async (req, res) => {
       const customer = new Customer({ name, contact, email, password, otp });
       await customer.save();
   
-      res.json({ success: true, message: 'OTP sent for verification.' });
+      return res.json({ success: true, message: 'OTP sent for verification.' });
     } catch (err) {
       console.log(err)
-      res.status(500).json({ success: false, message: 'Error signing up.' });
+      return res.status(500).json({ success: false, message: 'Error signing up.' });
     }
   });
   app.post('/customer/signin', async (req, res) => {
@@ -61,10 +61,10 @@ app.post('/customer/signup', async (req, res) => {
       // Password is correct, create a session or token to authenticate the user (not shown in this example)
       // You can use JSON Web Tokens (JWT) or a session-based approach for authentication.
   
-      res.json({ success: true, message: 'User signed in successfully.' });
+      return res.json({ success: true, message: 'User signed in successfully.' });
     } catch (err) {
       console.log(err);
-      res.status(500).json({ success: false, message: 'Error signing in.' });
+      return res.status(500).json({ success: false, message: 'Error signing in.' });
     }
   });
 

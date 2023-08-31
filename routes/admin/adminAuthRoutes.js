@@ -132,21 +132,21 @@ app.get('/admin/admins', async (req, res) => {
 app.get('/admin/user/:role',async(request,response)=>{
 
   const {role} = request.params;
-  const data =[]
+  let data =[]
   if(role === 'superadmin'){
-    data  = Admin.find({role: "superadmin"});
+    data  = await Admin.find({role: "superadmin"});
     return response.status(200).json(data);
   }
  else if(role === 'supportteam'){
-    data  = Admin.find({role: "supportteam"});
+    data  = await Admin.find({role: "supportteam"});
     return response.status(200).json(data);
   }
  else if(role === 'dutymanager'){
-    data  = Admin.find({role: "dutymanager"});
+    data  = await Admin.find({role: "dutymanager"});
     return response.status(200).json(data);
   }
   else {
-    data  = Admin.find({role: "approvalteam"});
+    data  = await Admin.find({role: "approvalteam"});
     return response.status(200).json(data);
   }
 
@@ -158,9 +158,9 @@ app.get('/admin/user/:role',async(request,response)=>{
 app.put('/admin/update-profile/:adminId', async (req, res) => {
   try {
     const { adminId } = req.params;
-    const { newPassword, newRole, phoneNumber } = req.body;
+    const {newemail, newPassword, newRole, newname,phoneNumber } = req.body;
 
-    if (!newPassword && !newRole && !phoneNumber) {
+    if (!newPassword && !newRole && !phoneNumber&& !newemail && !newname) {
       return res.status(400).json({ message: 'At least one attribute should be provided for modification' });
     }
 
@@ -184,6 +184,12 @@ app.put('/admin/update-profile/:adminId', async (req, res) => {
 
     if (phoneNumber) {
       admin.phoneNumber = phoneNumber;
+    }
+    if (newemail) {
+      admin.email = newemail;
+    }
+    if (newname) {
+      admin.name = newname;
     }
 
     await admin.save();

@@ -22,7 +22,7 @@ app.put('/customers/:customerId', async (req, res) => {
 
    return res.json(updatedCustomer);
   } catch (err) {
-    res.status(500).json({ error: 'Unable to update customer profile.' });
+    return res.status(500).json({ error: 'Unable to update customer profile.' });
   }
 });
 
