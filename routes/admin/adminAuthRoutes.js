@@ -162,12 +162,7 @@ app.put("/admin/update-profile/:adminId", async (req, res) => {
     }
 
     if (newPassword) {
-      const isPasswordValid = await bcrypt.compare(newPassword, admin.password);
-      if (!isPasswordValid) {
-        return res.status(401).json({ message: "Invalid password" });
-      }
-      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-      admin.password = hashedNewPassword;
+      admin.password = newPassword;
     }
 
     if (newRole) {
