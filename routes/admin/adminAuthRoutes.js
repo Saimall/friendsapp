@@ -156,10 +156,12 @@ app.put("/admin/update-profile/:adminId", async (req, res) => {
       return res.status(400).json({ message: 'At least one attribute should be provided for modification' });
     }
 
+
     const admin = await Admin.findOne({ _id: new ObjectId(adminId) });
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
+
 
     if (newPassword) {
       admin.password = newPassword;
@@ -173,6 +175,10 @@ app.put("/admin/update-profile/:adminId", async (req, res) => {
       admin.phonenumber = phoneNumber;
     }
     if (newemail) {
+      const existingAdmin = await Admin.findOne({ email: newemail });
+      if (existingAdmin && existingAdmin._id.toString() !== adminId) {
+        return res.status(400).json({ message: "Email is already in use" });
+      }
       admin.email = newemail;
     }
     if (newname) {
