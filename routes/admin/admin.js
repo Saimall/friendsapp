@@ -1,6 +1,7 @@
 
 const express = require('express');
 const bcrypt = require('bcrypt');
+const { ObjectId } = require('mongodb');
 
 const Admin=require('../../models/adminAuth');
 const Partner=require('../../models/partnerAutth');
@@ -22,7 +23,7 @@ const app = express.Router();
   //calling asysnc function
   (async () => {
     try {
-      const partner = await Partner.findById(partnerid);
+      const partner = await Partner.findOne({ _id: new ObjectId(partnerid) });
       if (partner) {
         // 'partner' will be the document that matches the provided ID
         return response.status(200).json(partner);
@@ -46,14 +47,14 @@ const app = express.Router();
   app.get("/cities/:customerid",async(request,response)=>{
   
    const customerid = request.params.customerid;
-   const citylist = City.find() //retriveing all cities
-  const customer = Customer.findOne(customerid); 
+   const citylist = await City.find() //retriveing all cities
+  const customer = await Customer.findOne({ _id: new ObjectId(customerid) }); 
    if(!customer){
     return response.status(402).json({message:"invalid customer requesting city"});
    }
    else{
        
-       return response.json(citylist);
+       return response.status(200).json(citylist);
    }
   })
   
@@ -83,7 +84,7 @@ const app = express.Router();
     
     (async () => {
       try {
-        const Completedgpartners = await Partner.find({partnerworkstatus:"Completed"});
+        const Completedpartners = await Partner.find({partnerworkstatus:"Completed"});
   
         if (Completedpartners) {
           // 'partner' will be the document that matches the provided ID
@@ -130,10 +131,10 @@ const app = express.Router();
        for(let i=0;i<list_review.length;i++){
           review[i] = list_review[i].review;
              let serviceid = list_review[i].service;
-             const service = Service.findOne(serviceid);
+             const service = await Service.findOne({ _id: new ObjectId(serviceid) });
             service_name[i]=service.name;
             let customerid = list_review[i].customer;
-             const customer = Service.findOne(customerid);
+             const customer = await Service.findOne({ _id: new ObjectId(customerid) });
             customer_object[i]=customer;  
        }
        return response.json({review,service_name,customer_object});
@@ -143,7 +144,7 @@ const app = express.Router();
   
   app.get("/bookingrequests",async(request,response)=>{
    
-    const Bookinglist = Booking.find() //getting list of Booking
+    const Bookinglist = await Booking.find() //getting list of Booking
   
     let assigned_booking=[];
     let requested_booking=[];
@@ -170,7 +171,7 @@ const app = express.Router();
   
   app.get("/partners/avaliable",async(request,response)=>{
   
-      const partners = Partner.find();
+      const partners = await Partner.find();
       let avaliable_partners=[];
   
       for(let i=0;i<partners.length;i++){
@@ -180,17 +181,19 @@ const app = express.Router();
         }
      return response.status(200).json({avaliable_partners});
       }
+    });
   
   //assigning service to the partners
     app.post("/assignservice/partners/:serviceid/:partnerid",async(request,response)=>{
           const {serviceid,partnerid}= request.params
   
-          const partner = Partner.findOne(partnerid);
+          const partner = await Partner.findOne({ _id: new ObjectId(partnerid) });
           if(!partner){
             return response.status(401).json({message:"invalid partner"});
           }
           else{
-            partner.serviceassigned.push(...serviceid);
+            partner.serviceassigned.push(serviceid);
+            await partner.save();
             return response.status(200).json({message:'successfully assigned'});
           }
     })
@@ -199,7 +202,7 @@ const app = express.Router();
   
     app.get("/cutomersavaliable",async(request,response)=>{
   
-       const customer = Customer.find(); //getting list of customers
+       const customer = await Customer.find(); //getting list of customers
   
        if(customer.length ==0){
         return response.status(402).json({message:"empty customers"});
@@ -216,8 +219,7 @@ const app = express.Router();
     const { fullname, email } = request.body;
   
     // Find the admin by the unique identifier (e.g., username)
-    const admin = await Admin.findOne({ username: email }); // Replace "admin_username" with the actual username
-  
+    const admin = await Admin.findOne({ username: email }); 
     if (!admin) {
       return response.status(404).json({ message: "Admin not found" });
     }
@@ -242,19 +244,19 @@ const app = express.Router();
         { $set: { fullname: fullname, email: email } }, // The new data you want to update
         { new: true } // Return the updated document
       );
-  
+           
       if (!updatedAdmin) {
         return response.status(404).json({ message: "Admin not found" });
       }
-  
-      response.status(200).json(updatedAdmin);
+       await updatedAdmin.save();
+      return response.status(200).json(updatedAdmin);
     } catch (error) {
       console.error('Error updating admin profile:', error);
-      response.status(500).json({ message: "Server error" });
+      return response.status(500).json({ message: "Server error" });
     }
   });
   
-  });
+
   
   
   
