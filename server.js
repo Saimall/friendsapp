@@ -13,7 +13,8 @@ const bookingRoutes=require('./routes/booking');
 const otpvalidation = require('./routes/otpvalidation');
 const customer = require('./routes/customer/customer');
 const profile = require('./routes/customer/profile');
-const admin = require('./routes/admin/admin')
+const admin = require('./routes/admin/admin');
+const city = require('./routes/cityRoute')
 const app = express();
 
 
@@ -96,6 +97,7 @@ app.use(subServiceRoutes);
 app.use(bookingRoutes);
 app.use(otpvalidation)
 app.use(customer);
+app.use(city)
 app.use(admin)
 
 // Set up MongoDB connection

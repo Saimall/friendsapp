@@ -2,25 +2,30 @@ const express = require('express');
 const app = express.Router();
 const City = require('../models/city');
 
-
+app.use(express.json());
 
 app.post('/cities', async (req, res) => {
   try {
-    const { name, pincodes } = req.body;
-    const city = new City({ name, pincodes });
-    await city.save();
-    res.status(201).json(city);
+    const {name,pincodes} = req.body;
+    console.log('Name:', name); // Debugging line
+    console.log('Pincodes:', pincodes); // Debugging line
+    if (!name || !pincodes || !Array.isArray(pincodes)) {
+      return res.status(400).json({ error: 'Invalid input..' });
+    }
+    const newcity = new City({ name, pincodes });
+    const savedcity = await newcity.save();
+    return res.status(200).json(savedcity);
   } catch (err) {
-    res.status(500).json({ error: 'Unable to add the city.' });
+    return res.status(500).json({ error: 'Unable to add the city.' });
   }
 });
 
 app.get('/cities', async (req, res) => {
     try {
       const cities = await City.find();
-      res.json(cities);
+      return res.json(cities);
     } catch (err) {
-      res.status(500).json({ error: 'Unable to fetch cities.' });
+      return res.status(500).json({ error: 'Unable to fetch cities.' });
     }
   });
 
@@ -33,9 +38,9 @@ app.get('/cities', async (req, res) => {
         { name, pincodes },
         { new: true }
       );
-      res.json(updatedCity);
+      return res.json(updatedCity);
     } catch (err) {
-      res.status(500).json({ error: 'Unable to update the city.' });
+      return res.status(500).json({ error: 'Unable to update the city.' });
     }
   });
 
@@ -43,9 +48,9 @@ app.get('/cities', async (req, res) => {
     try {
       const { cityId } = req.params;
       await City.findByIdAndDelete(cityId);
-      res.json({ message: 'City deleted successfully.' });
+      return res.json({ message: 'City deleted successfully.' });
     } catch (err) {
-      res.status(500).json({ error: 'Unable to delete the city.' });
+      return res.status(500).json({ error: 'Unable to delete the city.' });
     }
   });
 
@@ -64,9 +69,9 @@ app.get('/cities', async (req, res) => {
         return res.status(404).json({ error: 'City not found.' });
       }
       const pincodes = city.pincodes;
-      res.json(pincodes);
+      return res.json(pincodes);
     } catch (err) {
-      res.status(500).json({ error: 'Unable to fetch pincodes for the city.' });
+      return res.status(500).json({ error: 'Unable to fetch pincodes for the city.' });
     }
   });
 
@@ -80,9 +85,9 @@ app.get('/cities', async (req, res) => {
         { pincodes },
         { new: true }
       );
-      res.json(updatedCity);
+      return res.json(updatedCity);
     } catch (err) {
-      res.status(500).json({ error: 'Unable to update pincodes of the city.', details: err.message });
+      return res.status(500).json({ error: 'Unable to update pincodes of the city.', details: err.message });
     }
   });
 
@@ -104,9 +109,9 @@ app.get('/cities', async (req, res) => {
       city.pincodes.splice(pincodeIndex, 1);
       await city.save();
   
-      res.json({ message: 'Pincode deleted successfully from the city.' });
+      return res.json({ message: 'Pincode deleted successfully from the city.' });
     } catch (err) {
-      res.status(500).json({ error: 'Unable to delete the pincode from the city.', details: err.message });
+      return res.status(500).json({ error: 'Unable to delete the pincode from the city.', details: err.message });
     }
   });
   
