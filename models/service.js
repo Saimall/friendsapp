@@ -6,20 +6,45 @@ const serviceSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  type: { type: String, enum: ['Daily', 'Monthly'], default:'Daily'},
+  type: { type: String, enum: ['Daily', 'Monthly'], default:'Daily',required:true},
+  price: {
+    type: Number,
+    required: true,
+  },
   image:{
     type:String,
+    required:false
+  },
+  cities: [{
+    name: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  pincodes: [
+    {
+    type: Number,
+    required: true,
   }
-  
-  // cities: [{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'City',
-  //   required: false,
-  // }],
-  // price: {
-  //   type: Number,
-  //   required: true,
-  // },
+],
+}],
+
+  subservices:[{
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    image:{
+      type:String,
+      required:false
+    },
+}],
+ 
   // date: {
   //   type: Date,
   //   default: Date.now,

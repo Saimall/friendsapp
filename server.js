@@ -7,14 +7,15 @@ const mongoose = require('mongoose'); // Import mongoose
 const adminAuthRoutes=require('./routes/admin/adminAuthRoutes');
 const customerAuthRoutes=require('./routes/customer/customerAuthRoute');
 const partnerAuthRoutes=require('./routes/partner/partnerAuthRoutes');
-const serviceRoutes=require('./routes/services/serviceRoutes');
-const subServiceRoutes=require('./routes/services/subServiceRoutes');
+// const serviceRoutes=require('./routes/services/serviceRoutes');
+
 const bookingRoutes=require('./routes/booking');
 const otpvalidation = require('./routes/otpvalidation');
 const customer = require('./routes/customer/customer');
 const profile = require('./routes/customer/profile');
 const admin = require('./routes/admin/admin');
-const city = require('./routes/cityRoute')
+const city = require('./routes/cityRoute');
+const serviceRoutes = require('./routes/serviceRoutes'); 
 const app = express();
 
 
@@ -92,11 +93,10 @@ app.use(customerAuthRoutes);
 app.use(partnerAuthRoutes);
 app.use(profile)
 app.use(adminAuthRoutes);
-app.use(serviceRoutes);
-app.use(subServiceRoutes);
 app.use(bookingRoutes);
 app.use(otpvalidation)
 app.use(customer);
+app.use(serviceRoutes);
 app.use(city)
 app.use(admin)
 
