@@ -6,9 +6,9 @@ const { ObjectId } = require("mongodb");
 // Create a new service
 app.post('/service', async (req, res) => {
   try {
-    const {name,type,price,cities,subservices}=req.body;
+    const {name,type,price,cityname,subservices,image}=req.body;
     console.log("name",req.body.name);
-    const service = await Service({name,type,price,cities,subservices});
+    const service = await Service({name,type,price,cityname,subservices,image});
     await service.save();
     return res.status(200).json(service);
   } catch (error) {
@@ -30,9 +30,9 @@ app.get('/services', async (req, res) => {
 app.put("/service/update/:serviceId", async (req, res) => {
     try {
       const {serviceId } = req.params;
-      const {name,type,price,cities,subservices } = req.body;
+      const {name,type,price,cityname,subservices,image } = req.body;
   
-      if (!name && !type && !price&& !cities && !subservices) {
+      if (!name && !type && !price&& !cityname && !subservices) {
         return res.status(400).json({ message: 'At least one attribute should be provided for modification' });
       }
   
@@ -41,7 +41,9 @@ app.put("/service/update/:serviceId", async (req, res) => {
       if (!service) {
         return res.status(404).json({ message: "Service not found" });
       }
-  
+      if (image) {
+        service.image = image;
+      }
   
       if (name) {
         service.name = name;
@@ -51,8 +53,8 @@ app.put("/service/update/:serviceId", async (req, res) => {
         service.type = type;
       }
   
-      if (cities) {
-        service.cities = cities;
+      if (cityname) {
+        service.cityname = cityname;
       }
       if(subservices){
         service.subservices = subservices
