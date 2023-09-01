@@ -125,22 +125,19 @@ app.get("/admin/admins", async (req, res) => {
 
 //get user by role
 app.get("/admin/user/:role", async (request, response) => {
-  const {role} = request.params;
-  let data =[]
-  if(role === 'superadmin'){
-    data  = await Admin.find({role: "superadmin"});
+  const { role } = request.params;
+  let data = [];
+  if (role === "superadmin") {
+    data = await Admin.find({ role: "superadmin" });
     return response.status(200).json(data);
-  }
- else if(role === 'supportteam'){
-    data  = await Admin.find({role: "supportteam"});
+  } else if (role === "supportteam") {
+    data = await Admin.find({ role: "supportteam" });
     return response.status(200).json(data);
-  }
- else if(role === 'dutymanager'){
-    data  = await Admin.find({role: "dutymanager"});
+  } else if (role === "dutymanager") {
+    data = await Admin.find({ role: "dutymanager" });
     return response.status(200).json(data);
-  }
-  else {
-    data  = await Admin.find({role: "approvalteam"});
+  } else {
+    data = await Admin.find({ role: "approvalteam" });
     return response.status(200).json(data);
   }
 });
@@ -150,18 +147,18 @@ app.get("/admin/user/:role", async (request, response) => {
 app.put("/admin/update-profile/:adminId", async (req, res) => {
   try {
     const { adminId } = req.params;
-    const {newemail, newPassword, newRole, newname,phoneNumber } = req.body;
+    const { newemail, newPassword, newRole, newname, phoneNumber } = req.body;
 
-    if (!newPassword && !newRole && !phoneNumber&& !newemail && !newname) {
-      return res.status(400).json({ message: 'At least one attribute should be provided for modification' });
+    if (!newPassword && !newRole && !phoneNumber && !newemail && !newname) {
+      return res.status(400).json({
+        message: "At least one attribute should be provided for modification",
+      });
     }
-
 
     const admin = await Admin.findOne({ _id: new ObjectId(adminId) });
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
-
 
     if (newPassword) {
       admin.password = newPassword;
@@ -198,7 +195,7 @@ app.put("/admin/update-profile/:adminId", async (req, res) => {
 app.get("/admin/:adminId", async (req, res) => {
   try {
     const { adminId } = req.params;
-   
+
     const admin = await Admin.findOne({ _id: new ObjectId(adminId) });
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
@@ -209,8 +206,6 @@ app.get("/admin/:adminId", async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
-
-
 
 //done
 app.put("/admin/update-password/:adminId", async (req, res) => {
