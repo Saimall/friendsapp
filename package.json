@@ -19,11 +19,7 @@
     "moment": "^2.29.4",
     "mongodb": "^5.7.0",
     "mongoose": "^7.3.4",
-<<<<<<< HEAD
-    "multer": "^1.4.5-lts.1",
-=======
     "netlify-lambda": "^2.0.16",
->>>>>>> a49adc2f52fa7ee5bb5af2820f56f4e5ea3a6868
     "nodemon": "^3.0.1",
     "swagger-jsdoc": "^6.0.0",
     "swagger-ui-express": "^5.0.0",
