@@ -6,7 +6,7 @@ const serviceSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  type: { type: String, enum: ['Daily', 'Monthly'], default:'Daily',required:true},
+  type: { type: String, enum: ['Daily', 'Monthly'],required:true},
   price: {
     type: Number,
     required: true,
@@ -15,18 +15,12 @@ const serviceSchema = new mongoose.Schema({
     type:String,
     required:false
   },
-  cities: [{
-    name: {
+  cityname: [
+ {
     type: String,
-    required: true,
+    required: false,
     unique: true,
-  },
-  pincodes: [
-    {
-    type: Number,
-    required: true,
-  }
-],
+  
 }],
 
   subservices:[{
@@ -43,6 +37,13 @@ const serviceSchema = new mongoose.Schema({
       type:String,
       required:false
     },
+    pincodes: [
+      {
+      type: Number,
+      required: false, 
+    }
+  ],
+
 }],
  
   // date: {
