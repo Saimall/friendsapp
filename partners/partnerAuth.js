@@ -146,12 +146,10 @@ app.post("/verify/documents", async (req, res) => {
       message: "Verification successful. Partner added to partner request.",
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error verifying and submitting documents.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error verifying and submitting documents.",
+    });
   }
 });
 
